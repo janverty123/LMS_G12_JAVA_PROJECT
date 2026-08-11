@@ -1,12 +1,17 @@
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
-// Dev-server proxy means the frontend can call same-origin "/api/..." paths;
-// Vite forwards them to Spring Boot. This avoids relying on CORS during local
-// development (CORS config in the backend still exists for non-proxied use,
-// e.g. hitting the API directly from a browser tab or Postman).
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
 export default defineConfig({
   plugins: [react()],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "src"),
+    },
+  },
   server: {
     port: 5173,
     proxy: {
