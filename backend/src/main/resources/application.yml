@@ -1,0 +1,48 @@
+spring:
+  application:
+    name: apptitle-backend
+
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/apptitle}
+    username: ${DB_USERNAME:apptitle}
+    password: ${DB_PASSWORD:apptitle_dev_password}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      # 'update' is fine through early phases; Phase 10 (production readiness)
+      # replaces this with a real migration tool (Flyway) and switches to 'validate'.
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: false
+
+  servlet:
+    multipart:
+      max-file-size: 25MB
+      max-request-size: 25MB
+
+server:
+  port: 8080
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:dev-only-secret-do-not-use-in-production-change-me-please}
+    expiration-ms: ${JWT_EXPIRATION_MS:86400000}
+  cors:
+    allowed-origin: ${FRONTEND_ORIGIN:http://localhost:5173}
+  storage:
+    endpoint: ${STORAGE_ENDPOINT:http://localhost:9000}
+    access-key: ${STORAGE_ACCESS_KEY:apptitle_admin}
+    secret-key: ${STORAGE_SECRET_KEY:apptitle_dev_password}
+    bucket: ${STORAGE_BUCKET:apptitle-files}
+
+logging:
+  level:
+    com.apptitle: INFO
+    org.springframework.security: INFO

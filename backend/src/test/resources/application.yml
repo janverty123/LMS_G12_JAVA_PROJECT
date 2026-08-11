@@ -1,0 +1,20 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/apptitle
+    username: apptitle
+    password: apptitle_dev_password
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+app:
+  jwt:
+    secret: test-secret-not-for-production-use-only-for-context-load-tests
+    expiration-ms: 3600000
+  cors:
+    allowed-origin: http://localhost:5173
+  storage:
+    endpoint: http://localhost:9000
+    access-key: test
+    secret-key: test
+    bucket: apptitle-files-test

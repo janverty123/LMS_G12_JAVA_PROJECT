@@ -1,0 +1,39 @@
+{
+  "name": "APPTITLE Dev Environment",
+  "image": "mcr.microsoft.com/devcontainers/java:1-21-bookworm",
+
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "20"
+    },
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "version": "latest"
+    }
+  },
+
+  "forwardPorts": [8080, 5173, 5432, 9000, 9001],
+  "portsAttributes": {
+    "8080": { "label": "Backend API (Spring Boot)", "onAutoForward": "notify" },
+    "5173": { "label": "Frontend (React)", "onAutoForward": "openPreview" },
+    "5432": { "label": "PostgreSQL", "onAutoForward": "silent" },
+    "9000": { "label": "MinIO API", "onAutoForward": "silent" },
+    "9001": { "label": "MinIO Console", "onAutoForward": "silent" }
+  },
+
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
+  "postStartCommand": "docker compose up -d",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "vscjava.vscode-java-pack",
+        "vmware.vscode-spring-boot",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "bradlc.vscode-tailwindcss"
+      ]
+    }
+  },
+
+  "remoteUser": "vscode"
+}

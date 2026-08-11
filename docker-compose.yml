@@ -1,0 +1,41 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: apptitle-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: apptitle
+      POSTGRES_USER: apptitle
+      POSTGRES_PASSWORD: apptitle_dev_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - apptitle-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U apptitle -d apptitle"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  minio:
+    image: minio/minio:latest
+    container_name: apptitle-minio
+    restart: unless-stopped
+    environment:
+      MINIO_ROOT_USER: apptitle_admin
+      MINIO_ROOT_PASSWORD: apptitle_dev_password
+    ports:
+      - "9000:9000"   # S3 API
+      - "9001:9001"   # Web console
+    volumes:
+      - apptitle-minio-data:/data
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  apptitle-postgres-data:
+  apptitle-minio-data:
