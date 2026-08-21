@@ -1,31 +1,35 @@
 package com.apptitle.config;
 
+import com.apptitle.auth.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
- * Phase 1 skeleton: stateless session policy, CORS wired to the CorsConfig bean,
- * CSRF disabled (token-based API, not cookie/session based), only the health
- * check is public.
- *
- * NOT YET WIRED (arrives in Phase 2 alongside auth/ module):
- *   - JWT authentication filter
- *   - Role-based endpoint rules (/api/teacher/**, /api/students/**)
- *   - AuthenticationProvider backed by the User entity
- *
- * Until Phase 2 lands, every endpoint other than /api/health effectively has
- * no working authentication mechanism to satisfy "authenticated()" with — that
- * is expected and intentional; no feature endpoints exist yet either.
+ * Stateless JWT-based security. CSRF disabled (token-based API, not cookie/
+ * session based). Only /api/health and /api/auth/** are public; everything
+ * else requires a valid Bearer token, with fine-grained ownership checks
+ * (e.g. "is this teacher's own section") enforced in service layers via
+ * @PreAuthorize / explicit checks in later phases — method security is
+ * enabled here so those annotations work once added.
  */
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
+
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -40,9 +44,12 @@ public class SecurityConfig {
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/health").permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()
                         .anyRequest().authenticated()
-                );
+                )
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 }
+
