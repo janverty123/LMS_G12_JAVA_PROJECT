@@ -1,1 +1,47 @@
-{"name": "Java Project","features": {"ghcr.io/devcontainers/features/sshd:1": {"version": "latest"}}}
+{
+  "name": "APPTITLE Dev Environment",
+  "image": "://microsoft.com",
+
+  "features": {
+    "ghcr.io/devcontainers/features/java:1": {
+      "version": "21",
+      "installMaven": "true",
+      "mavenVersion": "3.9.9"
+    },
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "20"
+    },
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "version": "latest"
+    },
+    "ghcr.io/devcontainers/features/sshd:1": {
+      "version": "latest"
+    }
+  },
+
+  "forwardPorts":,
+  "portsAttributes": {
+    "8080": { "label": "Backend API (Spring Boot)", "onAutoForward": "notify" },
+    "5173": { "label": "Frontend (React)", "onAutoForward": "openPreview" },
+    "5432": { "label": "PostgreSQL", "onAutoForward": "silent" },
+    "9000": { "label": "MinIO API", "onAutoForward": "silent" },
+    "9001": { "label": "MinIO Console", "onAutoForward": "silent" }
+  },
+
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
+  "postStartCommand": "docker compose up -d",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "vscjava.vscode-java-pack",
+        "vmware.vscode-spring-boot",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "bradlc.vscode-tailwindcss"
+      ]
+    }
+  },
+
+  "remoteUser": "vscode"
+}
