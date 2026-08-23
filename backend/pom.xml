@@ -112,6 +112,33 @@
                     </excludes>
                 </configuration>
             </plugin>
+
+            <!--
+                Explicit annotation processor path for Lombok. Without this,
+                Lombok relies on Maven's default "scan the whole compile
+                classpath for annotation processors" behavior, which usually
+                works but is implicit and has proven fragile across some
+                Codespace rebuild/cache scenarios (Lombok present as a
+                dependency but its @Getter/@Setter methods silently not
+                generated, surfacing as "cannot find symbol" only once code
+                actually calls those methods). This makes it deterministic
+                regardless of environment. ${lombok.version} comes from
+                Spring Boot's own dependency-management BOM, so it stays in
+                sync automatically — no version to maintain here.
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>

@@ -2,7 +2,6 @@ package com.apptitle.config;
 
 import com.apptitle.user.entity.Role;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -67,7 +66,7 @@ public class JwtService {
         try {
             Jwts.parser().verifyWith(signingKey).build().parseSignedClaims(token);
             return true;
-        } catch (ExpiredJwtException | JwtException | IllegalArgumentException e) {
+        } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
     }
