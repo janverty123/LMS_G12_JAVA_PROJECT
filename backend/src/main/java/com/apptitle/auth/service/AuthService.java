@@ -90,32 +90,23 @@ public class AuthService {
     }
 
     /**
-     * LRN is required and stored (Philippine DepEd record-keeping) but plays
-     * no verification role. The classroom code DOES gate registration — an
-     * invalid/unknown code rejects registration outright (400) — but only
-     * checks "does this classroom exist," not anything about the student.
+     * Student registration no longer requires a classroom code.
+     * The student will join a class section in a separate step.
      */
     @Transactional
     public AuthResponse registerStudent(RegisterStudentRequest request) {
         String email = request.email().trim();
         String name = request.name().trim();
         String lrn = request.lrn().trim();
-        String classroomCode = request.classroomCode().trim().toUpperCase();
-
         if (userRepository.existsByEmailIgnoreCase(email)) {
             throw ApiException.conflict("An account with this email already exists.");
         }
 
         // One account per LRN — a real student shouldn't be able to create
-        // multiple separate accounts. Procedural check rather than a DB
-        // unique constraint; see Student.java for why.
+        // multiple separate accounts.
         if (studentRepository.existsByLrn(lrn)) {
             throw ApiException.conflict("An account already exists for this LRN.");
         }
-
-        Section section = sectionRepository.findByClassCode(classroomCode)
-                .orElseThrow(() -> ApiException.badRequest(
-                        "Invalid classroom code. Please check the code with your teacher."));
 
         User user = new User();
         user.setEmail(email);
@@ -130,16 +121,8 @@ public class AuthService {
         student.setLrn(lrn);
         student = studentRepository.save(student);
 
-        JoinRequest joinRequest = new JoinRequest();
-        joinRequest.setStudent(student);
-        joinRequest.setSection(section);
-        joinRequest.setStatus(JoinRequestStatus.PENDING);
-        joinRequestRepository.save(joinRequest);
-
         String token = jwtService.generateToken(user.getId(), user.getEmail(), user.getRole());
-        return new AuthResponse(
-                token, user.getId(), student.getName(), user.getEmail(), user.getRole(),
-                section.getName(), JoinRequestStatus.PENDING.name());
+        return AuthResponse.withoutSection(token, user.getId(), student.getName(), user.getEmail(), user.getRole());
     }
 
     public AuthResponse login(LoginRequest request) {
@@ -171,3 +154,4 @@ public class AuthService {
         };
     }
 }
+
