@@ -4,13 +4,16 @@ import com.apptitle.classsection.dto.ClassEnrollmentRequestResponse;
 import com.apptitle.classsection.dto.SectionMemberResponse;
 import com.apptitle.classsection.dto.StudentClassSectionResponse;
 import com.apptitle.classsection.entity.ClassEnrollmentRequest;
+import com.apptitle.classsection.entity.ClassEnrollmentRequestStatus;
 import com.apptitle.classsection.entity.ClassSection;
 import com.apptitle.classsection.repository.ClassEnrollmentRequestRepository;
 import com.apptitle.classsection.repository.ClassSectionRepository;
 import com.apptitle.common.exception.ApiException;
-import com.apptitle.joinrequest.entity.JoinRequestStatus;
 import com.apptitle.student.entity.Student;
 import com.apptitle.student.repository.StudentRepository;
+import com.apptitle.subject.dto.SubjectResponse;
+import com.apptitle.subject.entity.ClassSubjectLinkStatus;
+import com.apptitle.subject.repository.ClassSubjectLinkRepository;
 import com.apptitle.teacher.entity.Teacher;
 import com.apptitle.teacher.repository.TeacherRepository;
 import com.apptitle.user.repository.UserRepository;
@@ -30,6 +33,7 @@ public class ClassEnrollmentRequestService {
     private final ClassEnrollmentRequestRepository classEnrollmentRequestRepository;
     private final ClassSectionRepository classSectionRepository;
     private final StudentRepository studentRepository;
+    private final ClassSubjectLinkRepository classSubjectLinkRepository;
     private final TeacherRepository teacherRepository;
     private final UserRepository userRepository;
 
@@ -37,12 +41,14 @@ public class ClassEnrollmentRequestService {
             ClassEnrollmentRequestRepository classEnrollmentRequestRepository,
             ClassSectionRepository classSectionRepository,
             StudentRepository studentRepository,
+            ClassSubjectLinkRepository classSubjectLinkRepository,
             TeacherRepository teacherRepository,
             UserRepository userRepository
     ) {
         this.classEnrollmentRequestRepository = classEnrollmentRequestRepository;
         this.classSectionRepository = classSectionRepository;
         this.studentRepository = studentRepository;
+        this.classSubjectLinkRepository = classSubjectLinkRepository;
         this.teacherRepository = teacherRepository;
         this.userRepository = userRepository;
     }
@@ -52,7 +58,8 @@ public class ClassEnrollmentRequestService {
     @Transactional(readOnly = true)
     public List<ClassEnrollmentRequestResponse> listPendingForClassSection(String teacherEmail, UUID classSectionId) {
         ClassSection classSection = resolveOwnedClassSection(teacherEmail, classSectionId);
-        return classEnrollmentRequestRepository.findByClassSectionIdAndStatus(classSection.getId(), JoinRequestStatus.PENDING).stream()
+        return classEnrollmentRequestRepository.findByClassSectionIdAndStatus(
+                        classSection.getId(), ClassEnrollmentRequestStatus.PENDING).stream()
                 .map(this::toClassEnrollmentRequestResponse)
                 .toList();
     }
@@ -60,7 +67,12 @@ public class ClassEnrollmentRequestService {
     @Transactional
     public ClassEnrollmentRequestResponse approve(String teacherEmail, UUID requestId) {
         ClassEnrollmentRequest request = resolveOwnedRequest(teacherEmail, requestId);
-        request.setStatus(JoinRequestStatus.APPROVED);
+        requirePending(request);
+        if (classEnrollmentRequestRepository.existsByStudentIdAndStatus(
+                request.getStudent().getId(), ClassEnrollmentRequestStatus.APPROVED)) {
+            throw ApiException.conflict("This student already belongs to another class section.");
+        }
+        request.setStatus(ClassEnrollmentRequestStatus.APPROVED);
         request = classEnrollmentRequestRepository.save(request);
         return toClassEnrollmentRequestResponse(request);
     }
@@ -68,7 +80,8 @@ public class ClassEnrollmentRequestService {
     @Transactional
     public ClassEnrollmentRequestResponse decline(String teacherEmail, UUID requestId) {
         ClassEnrollmentRequest request = resolveOwnedRequest(teacherEmail, requestId);
-        request.setStatus(JoinRequestStatus.DECLINED);
+        requirePending(request);
+        request.setStatus(ClassEnrollmentRequestStatus.DECLINED);
         request = classEnrollmentRequestRepository.save(request);
         return toClassEnrollmentRequestResponse(request);
     }
@@ -76,11 +89,14 @@ public class ClassEnrollmentRequestService {
     @Transactional(readOnly = true)
     public List<SectionMemberResponse> listMembers(String teacherEmail, UUID classSectionId) {
         ClassSection classSection = resolveOwnedClassSection(teacherEmail, classSectionId);
-        return classEnrollmentRequestRepository.findByClassSectionIdAndStatus(classSection.getId(), JoinRequestStatus.APPROVED).stream()
+        return classEnrollmentRequestRepository.findByClassSectionIdAndStatus(
+                        classSection.getId(), ClassEnrollmentRequestStatus.APPROVED).stream()
                 .map(jr -> new SectionMemberResponse(
                         jr.getStudent().getId(),
                         jr.getStudent().getName(),
                         jr.getStudent().getLrn(),
+                        jr.getStudent().getUser().getEmail(),
+                        jr.getStatus(),
                         jr.getUpdatedAt()))
                 .toList();
     }
@@ -91,7 +107,7 @@ public class ClassEnrollmentRequestService {
         ClassEnrollmentRequest request = classEnrollmentRequestRepository.findByStudentIdAndClassSectionId(studentId, classSection.getId())
                 .orElseThrow(() -> ApiException.notFound("This student is not a member of this class section."));
 
-        if (request.getStatus() != JoinRequestStatus.APPROVED) {
+        if (request.getStatus() != ClassEnrollmentRequestStatus.APPROVED) {
             throw ApiException.badRequest("This student is not currently an approved member of this class section.");
         }
 
@@ -109,6 +125,11 @@ public class ClassEnrollmentRequestService {
                 .orElseThrow(() -> ApiException.badRequest(
                         "Invalid class code. Please check the code with your teacher."));
 
+        if (classEnrollmentRequestRepository.existsByStudentIdAndStatus(
+                student.getId(), ClassEnrollmentRequestStatus.APPROVED)) {
+            throw ApiException.conflict("You already belong to a class section.");
+        }
+
         if (classEnrollmentRequestRepository.existsByStudentIdAndClassSectionId(student.getId(), classSection.getId())) {
             throw ApiException.conflict(
                     "You've already requested to join this class (or are already a member).");
@@ -117,7 +138,7 @@ public class ClassEnrollmentRequestService {
         ClassEnrollmentRequest joinRequest = new ClassEnrollmentRequest();
         joinRequest.setStudent(student);
         joinRequest.setClassSection(classSection);
-        joinRequest.setStatus(JoinRequestStatus.PENDING);
+        joinRequest.setStatus(ClassEnrollmentRequestStatus.PENDING);
         joinRequest = classEnrollmentRequestRepository.save(joinRequest);
 
         return toClassEnrollmentRequestResponse(joinRequest);
@@ -132,15 +153,22 @@ public class ClassEnrollmentRequestService {
     }
 
     @Transactional(readOnly = true)
-    public List<StudentClassSectionResponse> listOwnApprovedClassSections(String studentEmail) {
+    public StudentClassSectionResponse getOwnApprovedClassSection(String studentEmail) {
         Student student = resolveStudent(studentEmail);
-        return classEnrollmentRequestRepository.findByStudentId(student.getId()).stream()
-                .filter(jr -> jr.getStatus() == JoinRequestStatus.APPROVED)
-                .map(jr -> new StudentClassSectionResponse(
-                        jr.getClassSection().getId(),
-                        jr.getClassSection().getGradeLevel() + " - " + jr.getClassSection().getSection(),
-                        jr.getClassSection().getSchoolYear(),
-                        jr.getClassSection().getAdviser().getName()))
+        return toStudentClassSectionResponse(resolveApprovedEnrollment(student));
+    }
+
+    @Transactional(readOnly = true)
+    public List<SubjectResponse> listOwnApprovedSubjects(String studentEmail) {
+        Student student = resolveStudent(studentEmail);
+        ClassEnrollmentRequest enrollment = resolveApprovedEnrollment(student);
+        return classSubjectLinkRepository.findByClassSectionIdAndStatus(
+                        enrollment.getClassSection().getId(), ClassSubjectLinkStatus.APPROVED).stream()
+                .map(link -> new SubjectResponse(
+                        link.getSubject().getId(),
+                        link.getSubject().getName(),
+                        link.getSubject().getSubjectCode(),
+                        link.getSubject().getSubjectTeacher().getName()))
                 .toList();
     }
 
@@ -180,6 +208,29 @@ public class ClassEnrollmentRequestService {
                 .orElseThrow(() -> ApiException.notFound("Account not found."));
         return studentRepository.findByUserId(user.getId())
                 .orElseThrow(() -> ApiException.forbidden("Only students can perform this action."));
+    }
+
+    private ClassEnrollmentRequest resolveApprovedEnrollment(Student student) {
+        return classEnrollmentRequestRepository.findByStudentIdAndStatus(
+                        student.getId(), ClassEnrollmentRequestStatus.APPROVED).stream()
+                .findFirst()
+                .orElseThrow(() -> ApiException.notFound(
+                        "You are not enrolled in any class section."));
+    }
+
+    private void requirePending(ClassEnrollmentRequest request) {
+        if (request.getStatus() != ClassEnrollmentRequestStatus.PENDING) {
+            throw ApiException.badRequest("Only pending enrollment requests can be reviewed.");
+        }
+    }
+
+    private StudentClassSectionResponse toStudentClassSectionResponse(ClassEnrollmentRequest request) {
+        ClassSection classSection = request.getClassSection();
+        return new StudentClassSectionResponse(
+                classSection.getId(),
+                classSection.getGradeLevel() + " - " + classSection.getSection(),
+                classSection.getSchoolYear(),
+                classSection.getAdviser().getName());
     }
 
     private ClassEnrollmentRequestResponse toClassEnrollmentRequestResponse(ClassEnrollmentRequest request) {

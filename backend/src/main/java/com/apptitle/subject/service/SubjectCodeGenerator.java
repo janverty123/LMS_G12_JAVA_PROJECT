@@ -3,7 +3,7 @@ package com.apptitle.subject.service;
 import com.apptitle.subject.repository.SubjectRepository;
 import org.springframework.stereotype.Component;
 
-import java.util.Random;
+import java.security.SecureRandom;
 
 /**
  * Generates unique 7-character subject codes for Subject entities.
@@ -11,35 +11,33 @@ import java.util.Random;
 @Component
 public class SubjectCodeGenerator {
 
+    private static final String ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+    private static final int CODE_LENGTH = 7;
+    private static final int MAX_ATTEMPTS = 10;
+
     private final SubjectRepository subjectRepository;
-    private final Random random = new Random();
+    private final SecureRandom random = new SecureRandom();
 
     public SubjectCodeGenerator(SubjectRepository subjectRepository) {
         this.subjectRepository = subjectRepository;
     }
 
     public String generateUnique() {
-        String code;
-        do {
-            code = generateRandomCode();
-        } while (subjectRepository.existsBySubjectCode(code));
-        return code;
+        for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+            String candidate = generate();
+            if (!subjectRepository.existsBySubjectCode(candidate)) {
+                return candidate;
+            }
+        }
+        throw new IllegalStateException(
+                "Could not generate a unique subject code after " + MAX_ATTEMPTS + " attempts.");
     }
 
-    private String generateRandomCode() {
-        // Generate 7-character alphanumeric code with 4 letters and 3 digits
-        StringBuilder code = new StringBuilder();
-        
-        // First 4 characters: uppercase letters
-        for (int i = 0; i < 4; i++) {
-            code.append((char) (random.nextInt(26) + 'A'));
+    private String generate() {
+        StringBuilder code = new StringBuilder(CODE_LENGTH);
+        for (int i = 0; i < CODE_LENGTH; i++) {
+            code.append(ALPHABET.charAt(random.nextInt(ALPHABET.length())));
         }
-        
-        // Last 3 characters: digits
-        for (int i = 0; i < 3; i++) {
-            code.append((char) (random.nextInt(10) + '0'));
-        }
-        
         return code.toString();
     }
 }

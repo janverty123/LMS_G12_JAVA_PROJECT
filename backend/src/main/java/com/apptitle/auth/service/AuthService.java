@@ -6,11 +6,6 @@ import com.apptitle.auth.dto.RegisterStudentRequest;
 import com.apptitle.auth.dto.RegisterTeacherRequest;
 import com.apptitle.common.exception.ApiException;
 import com.apptitle.config.JwtService;
-import com.apptitle.joinrequest.entity.JoinRequest;
-import com.apptitle.joinrequest.entity.JoinRequestStatus;
-import com.apptitle.joinrequest.repository.JoinRequestRepository;
-import com.apptitle.section.entity.Section;
-import com.apptitle.section.repository.SectionRepository;
 import com.apptitle.student.entity.Student;
 import com.apptitle.student.repository.StudentRepository;
 import com.apptitle.teacher.entity.Teacher;
@@ -25,25 +20,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
-/**
- * Registration no longer verifies students against any roster. Student
- * registration DOES require a valid classroom code (typed, not browsed/
- * picked) identifying exactly one Section — but the code only has to
- * correspond to a real classroom; it verifies nothing about the student.
- * Providing a valid code creates a PENDING JoinRequest, not membership —
- * actual access is granted only once a teacher approves it (Phase 3).
- *
- * Login is unchanged from the original implementation — no section/code
- * concept applies to it at all.
- */
 @Service
 public class AuthService {
 
     private final UserRepository userRepository;
     private final TeacherRepository teacherRepository;
     private final StudentRepository studentRepository;
-    private final SectionRepository sectionRepository;
-    private final JoinRequestRepository joinRequestRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
@@ -51,16 +33,12 @@ public class AuthService {
             UserRepository userRepository,
             TeacherRepository teacherRepository,
             StudentRepository studentRepository,
-            SectionRepository sectionRepository,
-            JoinRequestRepository joinRequestRepository,
             PasswordEncoder passwordEncoder,
             JwtService jwtService
     ) {
         this.userRepository = userRepository;
         this.teacherRepository = teacherRepository;
         this.studentRepository = studentRepository;
-        this.sectionRepository = sectionRepository;
-        this.joinRequestRepository = joinRequestRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
     }
@@ -86,7 +64,7 @@ public class AuthService {
         teacher = teacherRepository.save(teacher);
 
         String token = jwtService.generateToken(user.getId(), user.getEmail(), user.getRole());
-        return AuthResponse.withoutSection(token, user.getId(), teacher.getName(), user.getEmail(), user.getRole());
+        return new AuthResponse(token, user.getId(), teacher.getName(), user.getEmail(), user.getRole());
     }
 
     /**
@@ -122,7 +100,7 @@ public class AuthService {
         student = studentRepository.save(student);
 
         String token = jwtService.generateToken(user.getId(), user.getEmail(), user.getRole());
-        return AuthResponse.withoutSection(token, user.getId(), student.getName(), user.getEmail(), user.getRole());
+        return new AuthResponse(token, user.getId(), student.getName(), user.getEmail(), user.getRole());
     }
 
     public AuthResponse login(LoginRequest request) {
@@ -139,7 +117,7 @@ public class AuthService {
 
         String name = resolveDisplayName(user);
         String token = jwtService.generateToken(user.getId(), user.getEmail(), user.getRole());
-        return AuthResponse.withoutSection(token, user.getId(), name, user.getEmail(), user.getRole());
+        return new AuthResponse(token, user.getId(), name, user.getEmail(), user.getRole());
     }
 
     private String resolveDisplayName(User user) {

@@ -129,7 +129,10 @@ start at all if it can't reach Postgres) is working.
 | `DB_USERNAME` / `DB_PASSWORD` | Postgres credentials | `apptitle` / `apptitle_dev_password` |
 | `JWT_SECRET` | Signing key for auth tokens (Phase 2+) | dev placeholder — **must** change before any shared/deployed environment |
 | `JWT_EXPIRATION_MS` | Token lifetime | `86400000` (24h) |
-| `STORAGE_ENDPOINT` / `STORAGE_ACCESS_KEY` / `STORAGE_SECRET_KEY` / `STORAGE_BUCKET` | MinIO/S3 connection (Phase 4+) | matches `docker-compose.yml` |
+| `MINIO_ENDPOINT` / `MINIO_ACCESS_KEY` / `MINIO_SECRET_KEY` / `MINIO_BUCKET` | MinIO/S3 connection (Phase 4+) | matches `docker-compose.yml` |
+| `MINIO_INITIALIZE_BUCKET` | Create the configured bucket at startup when missing | `true` |
+| `MINIO_PRESIGNED_EXPIRY_SECONDS` | Upload/download URL lifetime | `900` |
+| `MINIO_MAX_FILE_SIZE_BYTES` | Maximum learning-material file size | `524288000` |
 | `FRONTEND_ORIGIN` | Allowed CORS origin | `http://localhost:5173` |
 
 ### Frontend (`frontend/.env.example`)

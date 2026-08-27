@@ -18,9 +18,6 @@ public record RegisterStudentRequest(
 
         @NotBlank(message = "Password is required")
         @Size(min = 8, message = "Password must be at least 8 characters")
-        String password,
-
-        @NotBlank(message = "Classroom code is required")
-        String classroomCode
+        String password
 ) {
 }

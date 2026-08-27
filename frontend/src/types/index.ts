@@ -15,5 +15,7 @@ export interface HealthResponse {
   timestamp: string;
 }
 
-// Extended in Phase 2 once auth/login exists.
-export type Role = "TEACHER" | "STUDENT";
+export * from "./auth";
+export * from "./classSection";
+export * from "./material";
+export * from "./subject";

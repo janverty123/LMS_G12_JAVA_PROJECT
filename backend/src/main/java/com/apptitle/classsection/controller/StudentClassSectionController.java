@@ -1,11 +1,12 @@
 package com.apptitle.classsection.controller;
 
-import com.apptitle.classsection.dto.ClassSectionResponse;
-import com.apptitle.classsection.service.ClassSectionService;
-import com.apptitle.joinrequest.dto.ClassEnrollmentRequestResponse;
-import com.apptitle.joinrequest.service.ClassEnrollmentRequestService;
+import com.apptitle.classsection.dto.ClassEnrollmentRequestResponse;
+import com.apptitle.classsection.dto.CreateClassJoinRequestRequest;
+import com.apptitle.classsection.dto.StudentClassSectionResponse;
+import com.apptitle.classsection.service.ClassEnrollmentRequestService;
 import com.apptitle.subject.dto.SubjectResponse;
-import com.apptitle.subject.service.ClassSubjectLinkService;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -17,52 +18,50 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-/**
- * Student endpoints for class section and subject access.
- */
 @RestController
 @RequestMapping("/api/students/me")
 @PreAuthorize("hasRole('STUDENT')")
 public class StudentClassSectionController {
 
     private final ClassEnrollmentRequestService classEnrollmentRequestService;
-    private final ClassSectionService classSectionService;
-    private final ClassSubjectLinkService classSubjectLinkService;
 
     public StudentClassSectionController(
-            ClassEnrollmentRequestService classEnrollmentRequestService,
-            ClassSectionService classSectionService,
-            ClassSubjectLinkService classSubjectLinkService
+            ClassEnrollmentRequestService classEnrollmentRequestService
     ) {
         this.classEnrollmentRequestService = classEnrollmentRequestService;
-        this.classSectionService = classSectionService;
-        this.classSubjectLinkService = classSubjectLinkService;
     }
 
     @PostMapping("/class-join-requests")
     public ResponseEntity<ClassEnrollmentRequestResponse> createJoinRequest(
-            @RequestBody String classCode,
+            @Valid @RequestBody CreateClassJoinRequestRequest request,
             Authentication authentication
     ) {
-        // Implementation will be updated after JoinRequest is renamed to ClassEnrollmentRequest
-        return null;
+        ClassEnrollmentRequestResponse response = classEnrollmentRequestService.createJoinRequest(
+                authentication.getName(), request.classCode());
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/class-join-requests")
-    public ResponseEntity<List<ClassEnrollmentRequestResponse>> listOwnJoinRequests(Authentication authentication) {
-        // Implementation will be updated after JoinRequest is renamed to ClassEnrollmentRequest
-        return null;
+    public ResponseEntity<List<ClassEnrollmentRequestResponse>> listOwnJoinRequests(
+            Authentication authentication
+    ) {
+        return ResponseEntity.ok(
+                classEnrollmentRequestService.listOwnJoinRequests(authentication.getName()));
     }
 
     @GetMapping("/class-section")
-    public ResponseEntity<ClassSectionResponse> getApprovedClassSection(Authentication authentication) {
-        // Implementation will be updated after JoinRequest is renamed to ClassEnrollmentRequest
-        return null;
+    public ResponseEntity<StudentClassSectionResponse> getApprovedClassSection(
+            Authentication authentication
+    ) {
+        return ResponseEntity.ok(
+                classEnrollmentRequestService.getOwnApprovedClassSection(authentication.getName()));
     }
 
     @GetMapping("/subjects")
-    public ResponseEntity<List<SubjectResponse>> listApprovedSubjects(Authentication authentication) {
-        // Implementation will be added after ClassSubjectLink is fully implemented
-        return null;
+    public ResponseEntity<List<SubjectResponse>> listApprovedSubjects(
+            Authentication authentication
+    ) {
+        return ResponseEntity.ok(
+                classEnrollmentRequestService.listOwnApprovedSubjects(authentication.getName()));
     }
 }

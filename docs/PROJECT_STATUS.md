@@ -1,22 +1,22 @@
 # APPTITLE (Classify) — Project Status & Migration Brief
 
 **Prepared against:** *Classify — Modern Learning Management & Student Progress Monitoring System — Updated SRS and Architecture Specification.md*
-**As of:** End of Phase 3 (Sections & Join Requests), decisions confirmed for the Class Section / Subject migration
+**As of:** Phase 4 Learning Materials implemented; database migrations pending per environment
 **Purpose of this document:** this is written to be handed to a coding agent as an implementation brief. Section 5 in particular is meant to be followed literally, in order, not just read for context.
 
 ---
 
 ## 1. Current Status
 
-The backend is functional through **Phase 3** of an 11-phase build plan — Java 21, Spring Boot 3.5.16, PostgreSQL, MinIO, GitHub Codespaces. Authentication and the classroom join-request workflow are built and verified end-to-end.
+The application is functional through the **Class Section / Subject migration** and **Phase 4 Learning Materials** — Java 21, Spring Boot 3.5.16, PostgreSQL, MinIO, GitHub Codespaces. Authentication, class enrollment, subject ownership, subject-link approval, and multipart material upload/download flows are implemented.
 
-**Three architecture decisions have now been confirmed** (previously open questions, now settled — see Section 4):
+**Three architecture decisions are now implemented** (see Section 4):
 
-1. Split the current combined `Section` entity into **`ClassSection` + `Subject` + a linking table**, matching the SRS's two-tier model.
-2. The **Class Adviser / Subject Teacher distinction matters** and should be reflected in the data model and API surface.
+1. The former combined `Section` entity is split into **`ClassSection` + `Subject` + a linking table**, matching the SRS's two-tier model.
+2. The **Class Adviser / Subject Teacher distinction** is reflected through entity ownership and separate API workflows.
 3. **Registration must NOT require a classroom code.** Students register first; joining a class section (by entering its code) happens as a separate step afterward.
 
-**This means a migration is required before Phase 4 (Materials) starts.** Building Materials/Activities/Grades against the current single-`Section` model and reconciling later would be far more expensive than migrating now, before those phases add more code on top of the wrong shape. Section 5 below is the full technical plan for that migration.
+Existing databases created with the legacy model must run `migration_scripts/class_section_subject_migration.sql` after taking a backup. The script preserves legacy tables for manual rollback inspection.
 
 ---
 
@@ -25,23 +25,31 @@ The backend is functional through **Phase 3** of an 11-phase build plan — Java
 ### Phase 1 — Foundation
 *(SRS §37 Docker Compose, §38 Tech Stack, §41–42 Architecture)*
 - Spring Boot + React/TypeScript/Vite/Tailwind scaffolds, wired together.
-- PostgreSQL + MinIO via Docker Compose (MinIO not yet used by code).
+- PostgreSQL + MinIO via Docker Compose; MinIO bucket/client configuration is now used by Phase 4.
 - Codespaces devcontainer (Java 21, Node 20, Docker-in-Docker).
 - Global exception handling, CORS, health check.
 
 ### Phase 2 — Authentication
 *(SRS §4 Registration, §5 Authentication, §48 Security)*
 - Teacher registration (name, email, password).
-- Student registration (name, email, password, LRN) — **currently also requires a classroom code; this requirement is being removed per Section 5 below.**
+- Student registration (name, email, password, LRN); class joining is a separate authenticated workflow.
 - Spring Security, BCrypt, stateless JWT, role-based authorization.
 
-### Phase 3 — Section & Join Request Management *(being migrated — see Section 5)*
-- Teacher creates a classroom (`Section`) with an auto-generated join code.
+### Phase 3 — Class Section, Enrollment & Subject Management
+- Teacher creates a `ClassSection` with an auto-generated six-character code.
 - Student sends a join request; teacher approves/declines.
 - Teacher: section CRUD, pending-request review, member list, member removal.
-- Student: view own join requests and approved classes; join additional classrooms after registration.
+- Subject Teacher: subject CRUD and subject-link request approval/decline.
+- Student: view their own enrollment requests, one approved Class Section, and inherited approved Subjects.
 - Ownership checks enforced and unit-tested.
-- **All of the above needs to be re-homed onto the new `ClassSection`/`Subject`/link model — see Section 5 for exactly what carries over vs. what's new.**
+
+### Phase 4 — Learning Materials *(implemented)*
+- Persistent `LearningMaterial` and `MaterialChunk` metadata.
+- Five MiB MinIO multipart initialization with server-generated object keys and presigned part URLs.
+- ETag-based multipart completion and short-lived presigned downloads.
+- Subject-owner upload authorization and approved-enrollment student read access.
+- Backend services, controllers, migration SQL, and service tests implemented.
+- Teacher and student material screens, direct browser-to-MinIO chunk uploads, ETag capture, progress, cancellation, and transient-failure retry implemented.
 
 ---
 
@@ -49,8 +57,6 @@ The backend is functional through **Phase 3** of an 11-phase build plan — Java
 
 | Order | Scope | SRS reference |
 |---|---|---|
-| **Next** | **Migration: split `Section` into `ClassSection` + `Subject` + linking table** (Section 5) | §3, §6–14 |
-| 4 | Learning Materials — MinIO resumable multipart upload, student read access | §15, §27–36 |
 | 5 | Activities — Written Activity / Performance Task / Test (exactly these 3) | §16–19 |
 | 6 | Grades — scoring, grading-weight config, category averages, final grade, Excel export | §22–25 |
 | 7 | Student self-submitted scores + proof photo, approve/reject/edit | §20–21 |
@@ -77,8 +83,8 @@ Per SRS §4.2/§9: registration and class-joining are two separate steps. `Regis
 ### 4.4 — Not yet built, locked by spec
 Grading categories are exactly three — Written Activity, Performance Task, Test (§16). No additional categories when Phase 5 starts.
 
-### 4.5 — Not yet built, heavily specified
-File uploads (§27–36): 5MB client chunks, server-generated presigned MinIO URLs, browser uploads directly to MinIO, ETag capture, retry ×3, completion endpoint finalizes the multipart upload. Phase 4 must follow this shape, not a simpler single-request upload.
+### 4.5 — Implemented upload contract
+File uploads (§27–36) use 5 MiB client chunks, server-generated presigned MinIO URLs, direct browser-to-MinIO uploads, ETag capture, a maximum of three attempts per part, and a completion endpoint that finalizes the multipart upload.
 
 ---
 
@@ -173,4 +179,4 @@ A teacher can: register → create a Class Section → create a Subject → link
 ---
 
 ## 7. Next Step
-Execute Section 5 in full before starting Phase 4. Phase 4 (Materials) is specified against the Class+Subject scope (SRS §14) and should be built directly on the new model, not on the old `Section` entity.
+Back up and migrate any legacy development database, verify the Class Section / Subject and Learning Materials acceptance flows, then scope Phase 5 Activities separately. Later modules remain unimplemented.

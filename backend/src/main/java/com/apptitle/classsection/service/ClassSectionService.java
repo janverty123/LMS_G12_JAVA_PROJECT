@@ -4,9 +4,10 @@ import com.apptitle.classsection.dto.ClassSectionResponse;
 import com.apptitle.classsection.dto.CreateClassSectionRequest;
 import com.apptitle.classsection.dto.UpdateClassSectionRequest;
 import com.apptitle.classsection.entity.ClassSection;
+import com.apptitle.classsection.repository.ClassEnrollmentRequestRepository;
 import com.apptitle.classsection.repository.ClassSectionRepository;
 import com.apptitle.common.exception.ApiException;
-import com.apptitle.joinrequest.repository.JoinRequestRepository;
+import com.apptitle.subject.repository.ClassSubjectLinkRepository;
 import com.apptitle.teacher.entity.Teacher;
 import com.apptitle.teacher.repository.TeacherRepository;
 import com.apptitle.user.repository.UserRepository;
@@ -25,20 +26,23 @@ public class ClassSectionService {
     private final ClassSectionRepository classSectionRepository;
     private final TeacherRepository teacherRepository;
     private final UserRepository userRepository;
-    private final JoinRequestRepository joinRequestRepository;
+    private final ClassEnrollmentRequestRepository classEnrollmentRequestRepository;
+    private final ClassSubjectLinkRepository classSubjectLinkRepository;
     private final ClassCodeGenerator classCodeGenerator;
 
     public ClassSectionService(
             ClassSectionRepository classSectionRepository,
             TeacherRepository teacherRepository,
             UserRepository userRepository,
-            JoinRequestRepository joinRequestRepository,
+            ClassEnrollmentRequestRepository classEnrollmentRequestRepository,
+            ClassSubjectLinkRepository classSubjectLinkRepository,
             ClassCodeGenerator classCodeGenerator
     ) {
         this.classSectionRepository = classSectionRepository;
         this.teacherRepository = teacherRepository;
         this.userRepository = userRepository;
-        this.joinRequestRepository = joinRequestRepository;
+        this.classEnrollmentRequestRepository = classEnrollmentRequestRepository;
+        this.classSubjectLinkRepository = classSubjectLinkRepository;
         this.classCodeGenerator = classCodeGenerator;
     }
 
@@ -78,8 +82,8 @@ public class ClassSectionService {
     @Transactional
     public void deleteClassSection(String teacherEmail, UUID classSectionId) {
         ClassSection classSection = resolveOwnedClassSection(teacherEmail, classSectionId);
-        // Delete all join requests for this class section first
-        joinRequestRepository.deleteBySectionId(classSection.getId());
+        classSubjectLinkRepository.deleteByClassSectionId(classSection.getId());
+        classEnrollmentRequestRepository.deleteByClassSectionId(classSection.getId());
         classSectionRepository.delete(classSection);
     }
 

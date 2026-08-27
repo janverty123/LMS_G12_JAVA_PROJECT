@@ -2,6 +2,7 @@ package com.apptitle.subject.entity;
 
 import com.apptitle.classsection.entity.ClassSection;
 import com.apptitle.common.entity.BaseEntity;
+import com.apptitle.teacher.entity.Teacher;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -10,10 +11,9 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.UUID;
 
 /**
  * Represents a link between a ClassSection and a Subject, which goes through
@@ -23,7 +23,10 @@ import java.util.UUID;
 @Getter
 @Setter
 @Entity
-@Table(name = "class_subject_links")
+@Table(
+        name = "class_subject_links",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"class_section_id", "subject_id"})
+)
 public class ClassSubjectLink extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -38,6 +41,7 @@ public class ClassSubjectLink extends BaseEntity {
     @Column(nullable = false)
     private ClassSubjectLinkStatus status;
 
-    @Column(nullable = false)
-    private UUID requestedBy; // Teacher ID who initiated the link
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "requested_by", nullable = false)
+    private Teacher requestedBy;
 }

@@ -49,7 +49,8 @@ public class ClassSubjectLinkService {
     public ClassSubjectLinkResponse createLinkRequest(String teacherEmail, UUID classSectionId, CreateClassSubjectLinkRequest request) {
         Teacher teacher = resolveTeacher(teacherEmail);
         ClassSection classSection = resolveOwnedClassSection(teacherEmail, classSectionId);
-        Subject subject = subjectRepository.findBySubjectCode(request.subjectCode())
+        String subjectCode = request.subjectCode().trim().toUpperCase();
+        Subject subject = subjectRepository.findBySubjectCode(subjectCode)
                 .orElseThrow(() -> ApiException.notFound("Subject not found."));
 
         // Check for existing link
@@ -61,7 +62,7 @@ public class ClassSubjectLinkService {
         link.setClassSection(classSection);
         link.setSubject(subject);
         link.setStatus(ClassSubjectLinkStatus.PENDING);
-        link.setRequestedBy(teacher.getId());
+        link.setRequestedBy(teacher);
 
         link = classSubjectLinkRepository.save(link);
         return toResponse(link);
@@ -69,8 +70,8 @@ public class ClassSubjectLinkService {
 
     @Transactional
     public ClassSubjectLinkResponse approveLink(String teacherEmail, UUID linkId) {
-        Teacher teacher = resolveTeacher(teacherEmail);
         ClassSubjectLink link = resolveOwnedLinkForSubjectTeacher(teacherEmail, linkId);
+        requirePending(link);
         link.setStatus(ClassSubjectLinkStatus.APPROVED);
         link = classSubjectLinkRepository.save(link);
         return toResponse(link);
@@ -78,8 +79,8 @@ public class ClassSubjectLinkService {
 
     @Transactional
     public ClassSubjectLinkResponse declineLink(String teacherEmail, UUID linkId) {
-        Teacher teacher = resolveTeacher(teacherEmail);
         ClassSubjectLink link = resolveOwnedLinkForSubjectTeacher(teacherEmail, linkId);
+        requirePending(link);
         link.setStatus(ClassSubjectLinkStatus.DECLINED);
         link = classSubjectLinkRepository.save(link);
         return toResponse(link);
@@ -87,7 +88,6 @@ public class ClassSubjectLinkService {
 
     @Transactional(readOnly = true)
     public List<ClassSubjectLinkResponse> listPendingLinksForSubject(String teacherEmail, UUID subjectId) {
-        Teacher teacher = resolveTeacher(teacherEmail);
         Subject subject = resolveOwnedSubject(teacherEmail, subjectId);
         return classSubjectLinkRepository.findBySubjectIdAndStatus(subject.getId(), ClassSubjectLinkStatus.PENDING)
                 .stream()
@@ -97,7 +97,6 @@ public class ClassSubjectLinkService {
 
     @Transactional(readOnly = true)
     public List<ClassSubjectLinkResponse> listLinksForClassSection(String teacherEmail, UUID classSectionId) {
-        Teacher teacher = resolveTeacher(teacherEmail);
         ClassSection classSection = resolveOwnedClassSection(teacherEmail, classSectionId);
         return classSubjectLinkRepository.findByClassSectionId(classSection.getId())
                 .stream()
@@ -145,11 +144,19 @@ public class ClassSubjectLinkService {
                 .orElseThrow(() -> ApiException.forbidden("Only teachers can perform this action."));
     }
 
+    private void requirePending(ClassSubjectLink link) {
+        if (link.getStatus() != ClassSubjectLinkStatus.PENDING) {
+            throw ApiException.badRequest("Only pending subject-link requests can be reviewed.");
+        }
+    }
+
     private ClassSubjectLinkResponse toResponse(ClassSubjectLink link) {
         return new ClassSubjectLinkResponse(
                 link.getId(),
                 link.getClassSection().getId(),
                 link.getClassSection().getGradeLevel() + " - " + link.getClassSection().getSection(),
+                link.getClassSection().getSchoolYear(),
+                link.getRequestedBy().getName(),
                 link.getSubject().getId(),
                 link.getSubject().getName(),
                 link.getStatus(),

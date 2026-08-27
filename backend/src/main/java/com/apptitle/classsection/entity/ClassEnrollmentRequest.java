@@ -1,7 +1,6 @@
 package com.apptitle.classsection.entity;
 
 import com.apptitle.common.entity.BaseEntity;
-import com.apptitle.joinrequest.entity.JoinRequestStatus;
 import com.apptitle.student.entity.Student;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,6 +10,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,7 +21,10 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "class_enrollment_requests")
+@Table(
+        name = "class_enrollment_requests",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"student_id", "class_section_id"})
+)
 public class ClassEnrollmentRequest extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -34,5 +37,5 @@ public class ClassEnrollmentRequest extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private JoinRequestStatus status;
+    private ClassEnrollmentRequestStatus status = ClassEnrollmentRequestStatus.PENDING;
 }

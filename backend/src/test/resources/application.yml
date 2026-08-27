@@ -13,8 +13,12 @@ app:
     expiration-ms: 3600000
   cors:
     allowed-origin: http://localhost:5173
-  storage:
-    endpoint: http://localhost:9000
-    access-key: test
-    secret-key: test
-    bucket: apptitle-files-test
+
+minio:
+  endpoint: http://localhost:9000
+  access-key: test
+  secret-key: test
+  bucket: apptitle-files-test
+  initialize-bucket: false
+  presigned-expiry-seconds: 900
+  max-file-size-bytes: 524288000

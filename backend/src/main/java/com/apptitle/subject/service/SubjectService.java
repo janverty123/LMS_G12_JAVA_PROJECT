@@ -6,6 +6,7 @@ import com.apptitle.subject.dto.SubjectResponse;
 import com.apptitle.subject.dto.UpdateSubjectRequest;
 import com.apptitle.subject.entity.Subject;
 import com.apptitle.subject.repository.SubjectRepository;
+import com.apptitle.subject.repository.ClassSubjectLinkRepository;
 import com.apptitle.teacher.entity.Teacher;
 import com.apptitle.teacher.repository.TeacherRepository;
 import com.apptitle.user.repository.UserRepository;
@@ -24,31 +25,35 @@ public class SubjectService {
     private final SubjectRepository subjectRepository;
     private final TeacherRepository teacherRepository;
     private final UserRepository userRepository;
+    private final ClassSubjectLinkRepository classSubjectLinkRepository;
     private final SubjectCodeGenerator subjectCodeGenerator;
 
     public SubjectService(
             SubjectRepository subjectRepository,
             TeacherRepository teacherRepository,
             UserRepository userRepository,
+            ClassSubjectLinkRepository classSubjectLinkRepository,
             SubjectCodeGenerator subjectCodeGenerator
     ) {
         this.subjectRepository = subjectRepository;
         this.teacherRepository = teacherRepository;
         this.userRepository = userRepository;
+        this.classSubjectLinkRepository = classSubjectLinkRepository;
         this.subjectCodeGenerator = subjectCodeGenerator;
     }
 
     @Transactional
     public SubjectResponse createSubject(String teacherEmail, CreateSubjectRequest request) {
         Teacher teacher = resolveTeacher(teacherEmail);
+        String name = request.name().trim();
 
-        if (subjectRepository.existsByName(request.name())) {
-            throw ApiException.conflict("A subject with this name already exists.");
+        if (subjectRepository.existsBySubjectTeacherIdAndNameIgnoreCase(teacher.getId(), name)) {
+            throw ApiException.conflict("You already have a subject with this name.");
         }
 
         Subject subject = new Subject();
         subject.setSubjectTeacher(teacher);
-        subject.setName(request.name().trim());
+        subject.setName(name);
         subject.setSubjectCode(subjectCodeGenerator.generateUnique());
 
         subject = subjectRepository.save(subject);
@@ -66,7 +71,13 @@ public class SubjectService {
     @Transactional
     public SubjectResponse updateSubject(String teacherEmail, UUID subjectId, UpdateSubjectRequest request) {
         Subject subject = resolveOwnedSubject(teacherEmail, subjectId);
-        subject.setName(request.name().trim());
+        String name = request.name().trim();
+        if (!subject.getName().equalsIgnoreCase(name)
+                && subjectRepository.existsBySubjectTeacherIdAndNameIgnoreCase(
+                        subject.getSubjectTeacher().getId(), name)) {
+            throw ApiException.conflict("You already have a subject with this name.");
+        }
+        subject.setName(name);
         subject = subjectRepository.save(subject);
         return toResponse(subject);
     }
@@ -74,6 +85,7 @@ public class SubjectService {
     @Transactional
     public void deleteSubject(String teacherEmail, UUID subjectId) {
         Subject subject = resolveOwnedSubject(teacherEmail, subjectId);
+        classSubjectLinkRepository.deleteBySubjectId(subject.getId());
         subjectRepository.delete(subject);
     }
 

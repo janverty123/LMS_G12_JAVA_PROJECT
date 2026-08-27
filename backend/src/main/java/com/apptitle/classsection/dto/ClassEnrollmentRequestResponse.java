@@ -1,6 +1,6 @@
 package com.apptitle.classsection.dto;
 
-import com.apptitle.joinrequest.entity.JoinRequestStatus;
+import com.apptitle.classsection.entity.ClassEnrollmentRequestStatus;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -17,6 +17,6 @@ public record ClassEnrollmentRequestResponse(
     UUID classSectionId,
     String classSectionName,
     String schoolYear,
-    JoinRequestStatus status,
+    ClassEnrollmentRequestStatus status,
     Instant updatedAt
 ) {}

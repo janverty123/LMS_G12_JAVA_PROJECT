@@ -36,11 +36,15 @@ app:
     expiration-ms: ${JWT_EXPIRATION_MS:86400000}
   cors:
     allowed-origin: ${FRONTEND_ORIGIN:http://localhost:5173}
-  storage:
-    endpoint: ${STORAGE_ENDPOINT:http://localhost:9000}
-    access-key: ${STORAGE_ACCESS_KEY:apptitle_admin}
-    secret-key: ${STORAGE_SECRET_KEY:apptitle_dev_password}
-    bucket: ${STORAGE_BUCKET:apptitle-files}
+
+minio:
+  endpoint: ${MINIO_ENDPOINT:http://localhost:9000}
+  access-key: ${MINIO_ACCESS_KEY:apptitle_admin}
+  secret-key: ${MINIO_SECRET_KEY:apptitle_dev_password}
+  bucket: ${MINIO_BUCKET:apptitle-files}
+  initialize-bucket: ${MINIO_INITIALIZE_BUCKET:true}
+  presigned-expiry-seconds: ${MINIO_PRESIGNED_EXPIRY_SECONDS:900}
+  max-file-size-bytes: ${MINIO_MAX_FILE_SIZE_BYTES:524288000}
 
 logging:
   level:

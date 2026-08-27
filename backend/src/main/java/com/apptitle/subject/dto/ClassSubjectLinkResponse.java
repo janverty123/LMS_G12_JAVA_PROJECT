@@ -12,6 +12,8 @@ public record ClassSubjectLinkResponse(
     UUID id,
     UUID classSectionId,
     String classSectionName,
+    String schoolYear,
+    String requestingAdviserName,
     UUID subjectId,
     String subjectName,
     ClassSubjectLinkStatus status,

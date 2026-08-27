@@ -8,6 +8,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,14 +19,17 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "subjects")
+@Table(
+        name = "subjects",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"subject_teacher_id", "name"})
+)
 public class Subject extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "subject_teacher_id", nullable = false)
     private Teacher subjectTeacher;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String name; // e.g., "Mathematics"
 
     @Column(nullable = false, unique = true, length = 7)
