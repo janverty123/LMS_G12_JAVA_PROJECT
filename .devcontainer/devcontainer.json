@@ -1,6 +1,6 @@
 {
   "name": "APPTITLE Dev Environment",
-  "image": "://microsoft.com",
+  "image": "mcr.microsoft.com/devcontainers/base:bookworm",
 
   "features": {
     "ghcr.io/devcontainers/features/java:1": {
@@ -19,7 +19,7 @@
     }
   },
 
-  "forwardPorts":,
+  "forwardPorts": [8080, 5173, 5432, 9000, 9001],
   "portsAttributes": {
     "8080": { "label": "Backend API (Spring Boot)", "onAutoForward": "notify" },
     "5173": { "label": "Frontend (React)", "onAutoForward": "openPreview" },
