@@ -17,6 +17,9 @@ import com.apptitle.subject.repository.ClassSubjectLinkRepository;
 import com.apptitle.teacher.entity.Teacher;
 import com.apptitle.teacher.repository.TeacherRepository;
 import com.apptitle.user.repository.UserRepository;
+import com.apptitle.notification.entity.NotificationType;
+import com.apptitle.notification.service.NotificationService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +39,12 @@ public class ClassEnrollmentRequestService {
     private final ClassSubjectLinkRepository classSubjectLinkRepository;
     private final TeacherRepository teacherRepository;
     private final UserRepository userRepository;
+    private NotificationService notificationService;
+
+    @Autowired(required = false)
+    void setNotificationService(NotificationService notificationService) {
+        this.notificationService = notificationService;
+    }
 
     public ClassEnrollmentRequestService(
             ClassEnrollmentRequestRepository classEnrollmentRequestRepository,
@@ -74,6 +83,8 @@ public class ClassEnrollmentRequestService {
         }
         request.setStatus(ClassEnrollmentRequestStatus.APPROVED);
         request = classEnrollmentRequestRepository.save(request);
+        notifyStudent(request, NotificationType.JOIN_REQUEST_APPROVED,
+                "Your class join request was approved.");
         return toClassEnrollmentRequestResponse(request);
     }
 
@@ -83,6 +94,8 @@ public class ClassEnrollmentRequestService {
         requirePending(request);
         request.setStatus(ClassEnrollmentRequestStatus.DECLINED);
         request = classEnrollmentRequestRepository.save(request);
+        notifyStudent(request, NotificationType.JOIN_REQUEST_DECLINED,
+                "Your class join request was declined.");
         return toClassEnrollmentRequestResponse(request);
     }
 
@@ -140,8 +153,22 @@ public class ClassEnrollmentRequestService {
         joinRequest.setClassSection(classSection);
         joinRequest.setStatus(ClassEnrollmentRequestStatus.PENDING);
         joinRequest = classEnrollmentRequestRepository.save(joinRequest);
+        if (notificationService != null) {
+            notificationService.notifyUser(classSection.getAdviser().getUser(),
+                    NotificationType.JOIN_REQUEST_RECEIVED,
+                    "New class join request from " + student.getName(),
+                    joinRequest.getId().toString());
+        }
 
         return toClassEnrollmentRequestResponse(joinRequest);
+    }
+
+    private void notifyStudent(ClassEnrollmentRequest request, NotificationType type,
+            String message) {
+        if (notificationService != null) {
+            notificationService.notifyUser(request.getStudent().getUser(), type, message,
+                    request.getId().toString());
+        }
     }
 
     @Transactional(readOnly = true)

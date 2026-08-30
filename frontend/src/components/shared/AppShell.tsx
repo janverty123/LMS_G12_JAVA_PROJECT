@@ -26,16 +26,19 @@ export function AppShell() {
             <p className="font-semibold tracking-tight">APPTITLE</p>
             <p className="text-xs text-slate-500">{user?.name} · {user?.role.toLowerCase()}</p>
           </div>
-          <nav className="flex items-center gap-1" aria-label="Primary navigation">
+          <nav className="flex w-full items-center gap-1 overflow-x-auto pb-1 sm:w-auto sm:pb-0" aria-label="Primary navigation">
             {user?.role === "TEACHER" ? (
               <>
                 <NavLink className={navClass} to="/teacher/class-sections">Class sections</NavLink>
                 <NavLink className={navClass} to="/teacher/subjects">Subjects</NavLink>
+                <NavLink className={navClass} to="/teacher/notifications">Notifications</NavLink>
               </>
             ) : (
               <>
                 <NavLink className={navClass} to="/student/class-section">My class</NavLink>
                 <NavLink className={navClass} to="/student/subjects">My subjects</NavLink>
+                <NavLink className={navClass} to="/student/announcements">Announcements</NavLink>
+                <NavLink className={navClass} to="/student/notifications">Notifications</NavLink>
               </>
             )}
             <button
@@ -48,7 +51,7 @@ export function AppShell() {
           </nav>
         </div>
       </header>
-      <main className="mx-auto max-w-6xl px-5 py-8">
+      <main className="mx-auto max-w-6xl px-4 py-6 sm:px-5 sm:py-8">
         <Outlet />
       </main>
     </div>

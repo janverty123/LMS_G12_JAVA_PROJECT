@@ -34,12 +34,12 @@ docker compose up -d
 # 2. Run the backend
 cd backend
 cp .env.example .env   # fill in values
-./mvnw spring-boot:run
+mvn spring-boot:run
 
 # 3. Run the frontend
 cd frontend
 cp .env.example .env
-npm install
+npm ci
 npm run dev
 ```
 
@@ -47,33 +47,11 @@ Backend runs on `http://localhost:8080`, frontend on `http://localhost:5173`.
 
 ## Status
 
-**Phase 1 — Project Setup (complete):**
-- Backend and frontend scaffolds created and wired together.
-- PostgreSQL configured via Docker Compose and Spring datasource config.
-- MinIO configured for future file-storage phases (buckets not yet used by code).
-- Base entity, global exception handling, CORS, and security skeleton in place.
-- Health-check endpoint (`GET /api/health`) confirms frontend ↔ backend connectivity.
-
-**Phase 2 — Authentication (complete):**
-- Teacher and student registration plus login are implemented. Student
-  registration requires name, LRN, email, and password; joining a class is a
-  separate authenticated action.
-- JWT issuance/validation, BCrypt password hashing, stateless Spring Security
-  filter chain protecting everything except `/api/health` and `/api/auth/**`.
-- Unit tests cover registration, duplicate email/LRN handling, and login.
-
-**Class Section and Subject management (complete):**
-- Class Advisers manage `ClassSection` records and six-character class codes,
-  approve enrollment requests, and manage the class roster.
-- Subject Teachers manage `Subject` records and seven-character subject codes,
-  then approve or decline adviser-initiated subject-link requests.
-- Approved students inherit every approved Subject linked to their one Class
-  Section; students never request Subjects individually.
-- Ownership checks protect every teacher-side mutation. See
-  `migration_scripts/class_section_subject_migration.sql` before upgrading a
-  database created with the legacy `Section` model.
-
-See the project's Claude Project instructions for the full phased roadmap.
-
+Phases 1–9 are implemented: authentication; ClassSection/Subject enrollment;
+multipart learning materials; activities, attachments and submissions; grades
+and XLSX export; student score proposals with teacher approval; progress;
+announcements; and persistent notifications. Phase 10 is a focused hardening
+pass. See [docs/PROJECT_STATUS.md](./docs/PROJECT_STATUS.md) for exact status and
+[docs/SETUP.md](./docs/SETUP.md) for clean-clone and production configuration.
 
 

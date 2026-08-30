@@ -43,7 +43,7 @@ export function splitFileIntoChunks(
   return chunks;
 }
 
-function resolveContentType(file: File) {
+export function resolveContentType(file: File) {
   if (file.type) return file.type;
   const extension = file.name.split(".").pop()?.toLowerCase() ?? "";
   return CONTENT_TYPES_BY_EXTENSION[extension] ?? "application/octet-stream";
@@ -176,6 +176,44 @@ function reportProgress(
   callback?.(progress);
 }
 
+export async function uploadMultipartParts(
+  file: File,
+  initialized: Pick<InitMaterialUploadResponse,
+    "chunkSize" | "totalParts" | "presignedUrls">,
+  signal?: AbortSignal,
+  onProgress?: UploadLearningMaterialOptions["onProgress"]
+) {
+  const chunks = splitFileIntoChunks(file, initialized.chunkSize);
+  const urls = [...initialized.presignedUrls]
+    .sort((left, right) => left.partNumber - right.partNumber);
+  if (chunks.length !== initialized.totalParts || urls.length !== chunks.length) {
+    throw new Error("Upload initialization returned an invalid part plan.");
+  }
+
+  let completedBytes = 0;
+  const parts = [];
+  reportProgress(onProgress, 0, file.size, 1, chunks.length);
+  for (let index = 0; index < chunks.length; index++) {
+    const chunk = chunks[index];
+    const part = urls[index];
+    if (part.partNumber !== index + 1) {
+      throw new Error("Upload URLs are not numbered consecutively.");
+    }
+    const eTag = await uploadPartWithRetry(
+      part.url,
+      chunk,
+      (partBytes) => reportProgress(onProgress, completedBytes + partBytes,
+        file.size, part.partNumber, chunks.length),
+      signal
+    );
+    completedBytes += chunk.size;
+    parts.push({ partNumber: part.partNumber, eTag });
+    reportProgress(onProgress, completedBytes, file.size,
+      part.partNumber, chunks.length);
+  }
+  return parts;
+}
+
 export const materialService = {
   async initUpload(
     classSectionId: string,
@@ -215,46 +253,9 @@ export const materialService = {
       }
     );
 
-    const chunks = splitFileIntoChunks(options.file, initialized.chunkSize);
-    const urls = [...initialized.presignedUrls]
-      .sort((left, right) => left.partNumber - right.partNumber);
-    if (chunks.length !== initialized.totalParts || urls.length !== chunks.length) {
-      throw new Error("Upload initialization returned an invalid part plan.");
-    }
-
-    let completedBytes = 0;
-    const parts = [];
-    reportProgress(options.onProgress, 0, options.file.size, 1, chunks.length);
-
-    for (let index = 0; index < chunks.length; index++) {
-      const chunk = chunks[index];
-      const part = urls[index];
-      if (part.partNumber !== index + 1) {
-        throw new Error("Upload URLs are not numbered consecutively.");
-      }
-
-      const eTag = await uploadPartWithRetry(
-        part.url,
-        chunk,
-        (partBytes) => reportProgress(
-          options.onProgress,
-          completedBytes + partBytes,
-          options.file.size,
-          part.partNumber,
-          chunks.length
-        ),
-        options.signal
-      );
-      completedBytes += chunk.size;
-      parts.push({ partNumber: part.partNumber, eTag });
-      reportProgress(
-        options.onProgress,
-        completedBytes,
-        options.file.size,
-        part.partNumber,
-        chunks.length
-      );
-    }
+    const parts = await uploadMultipartParts(
+      options.file, initialized, options.signal, options.onProgress
+    );
 
     return this.completeUpload(initialized.materialId, {
       uploadId: initialized.uploadId,

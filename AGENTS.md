@@ -1,30 +1,33 @@
 # Repository Guidelines
 
+## Project Goal & Architecture
+
+Classify is a responsive learning management and student-progress system built as a modular monolith. Its core hierarchy is Class Section → Subject → materials, activities, grades, and progress. A teacher may act as both Class Adviser and Subject Teacher; students join one class and inherit its approved subjects. Treat `docs/SRS.md` as the requirements baseline and `docs/PROJECT_STATUS.md` as the current implementation roadmap. Learning Materials (Phase 4) is implemented; Activities (Phase 5) is next.
+
 ## Project Structure & Module Organization
 
-This repository contains a Java 21/Spring Boot backend and a React/TypeScript frontend. Backend code lives under `backend/src/main/java/com/apptitle`, organized by feature (`auth`, `classsection`, `subject`, and similar) and then by controller, service, repository, entity, and DTO. Configuration files are in `backend/src/main/resources`; JUnit tests mirror the package structure under `backend/src/test`. Frontend application code is in `frontend/src`, with shared API access in `services/` and TypeScript models in `types/`. Keep database changes in `migration_scripts/` and project documentation in `docs/`.
+The Java 21/Spring Boot backend is under `backend/src/main/java/com/apptitle`, organized by feature and then controller, service, repository, entity, and DTO. Backend configuration lives in `backend/src/main/resources`; JUnit tests mirror packages under `backend/src/test`. React/TypeScript code is in `frontend/src`, with API clients in `services/`, models in `types/`, and role-specific pages/components in their respective folders. Keep SQL changes in `migration_scripts/` and documentation in `docs/`.
 
 ## Build, Test, and Development Commands
 
-- `docker compose up -d`: start PostgreSQL and MinIO for local development.
+- `docker compose up -d`: start PostgreSQL and MinIO.
 - `cd backend && mvn spring-boot:run`: run the API on port 8080.
-- `cd backend && mvn test`: execute the backend JUnit/Mockito suite.
-- `cd backend && mvn clean package`: compile, test, and package the backend.
-- `cd frontend && npm ci`: install the locked frontend dependencies.
+- `cd backend && mvn test`: run JUnit/Mockito tests.
+- `cd backend && mvn clean package`: compile, test, and package.
+- `cd frontend && npm ci`: install locked dependencies.
 - `cd frontend && npm run dev`: start Vite on port 5173.
-- `cd frontend && npm run lint`: run ESLint over TypeScript and React code.
-- `cd frontend && npm run build`: type-check and create the production bundle.
+- `cd frontend && npm run lint && npm run build`: lint, type-check, and bundle.
 
-Copy each module's `.env.example` to `.env` when local overrides are needed. Never commit secrets.
+Copy module `.env.example` files for local overrides; never commit secrets.
 
-## Coding Style & Naming Conventions
+## Coding Style & Domain Constraints
 
-Use four-space indentation in Java and two spaces in TypeScript/TSX. Java packages are lowercase; classes use `PascalCase`, methods and variables use `camelCase`, and DTOs use descriptive suffixes such as `CreateSubjectRequest` or `SubjectResponse`. Keep Spring layers feature-local and prefer constructor injection. React components and exported types use `PascalCase`; hooks and functions use `camelCase`. Follow the existing ESLint configuration and preserve the frontend's double-quote, semicolon style.
+Use four-space Java and two-space TypeScript/TSX indentation. Use `PascalCase` for Java classes, React components, and exported types; use `camelCase` for methods, variables, hooks, and functions. Keep Spring layers feature-local and use constructor injection. Preserve frontend double quotes and semicolons.
 
-## Testing Guidelines
+Enforce authorization in the backend. Registration and class joining remain separate; students never join subjects directly. Activity categories are exactly Written Activity, Performance Task, and Test. Preserve ownership checks and the established direct-to-MinIO multipart upload contract.
 
-Use JUnit 5 and Mockito. Name test classes `*Test` and test methods after behavior, for example `registerStudent_rejectsInvalidClassroomCode`. Add service tests for success, validation, authorization, and failure paths. Start PostgreSQL before running the complete backend suite. The frontend currently has no test runner; lint and production build are required checks for frontend changes.
+## Testing & Contributions
 
-## Commit & Pull Request Guidelines
+Name backend tests `*Test` and methods by behavior, such as `registerStudent_rejectsDuplicateLrn`. Cover success, validation, authorization, duplicate, and failure paths. Frontend changes must pass lint and production build.
 
-Recent history favors short, imperative summaries, often with Conventional Commit prefixes such as `feat:`. Keep commits focused; use forms like `fix: reject duplicate section codes`. Pull requests should explain the problem and solution, list verification commands, link relevant issues, and call out schema or configuration changes. Include screenshots for visible UI changes and update `docs/` when behavior or setup changes.
+Use focused, imperative commits; Conventional Commit prefixes such as `feat:` and `fix:` are encouraged. Pull requests should explain the problem and solution, list verification commands, link issues, note schema/configuration changes, and include screenshots for UI work. Back up databases and review migration preflight steps before applying SQL.

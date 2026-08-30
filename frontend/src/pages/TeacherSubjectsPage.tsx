@@ -110,7 +110,7 @@ export function TeacherSubjectsPage() {
       {error && <div className="mt-5"><ApiAlert message={error} /></div>}
 
       <form className="mt-6 flex max-w-xl flex-wrap gap-3 rounded-xl border border-slate-200 bg-white p-5 shadow-sm" onSubmit={submit}>
-        <label className="min-w-64 flex-1 text-sm font-medium text-slate-700">
+        <label className="w-full min-w-0 flex-1 text-sm font-medium text-slate-700 sm:min-w-64">
           {editing ? "Subject name" : "New subject name"}
           <input required className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2" placeholder="General Mathematics" value={name} onChange={(event) => setName(event.target.value)} />
         </label>

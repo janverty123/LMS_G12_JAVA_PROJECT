@@ -1,251 +1,130 @@
-# APPTITLE — Setup Guide
-
-## Option A — GitHub Codespaces (works entirely from a phone browser)
-
-This repo includes a `.devcontainer/` config, so Codespaces auto-installs
-Java 21, Node 20, and Docker — no local machine needed.
-
-1. Push/upload this project to a GitHub repository.
-2. On the repo page, tap **Code → Codespaces → Create codespace on main**.
-3. Wait for the container to build (a few minutes the first time — it's
-   installing Java, Node, and Docker). `postCreateCommand` then automatically
-   runs `npm install` for the frontend and pre-fetches Maven dependencies.
-4. `postStartCommand` automatically runs `docker compose up -d`, starting
-   Postgres and MinIO inside the Codespace.
-5. Open two terminals in the Codespace (VS Code's terminal panel, `+` to add
-   a second one):
-   ```bash
-   # Terminal 1
-   cd backend && mvn spring-boot:run
-
-   # Terminal 2
-   cd frontend && npm run dev
-   ```
-6. Codespaces detects ports 8080 and 5173 and pops up a notification —
-   tap **Open in Browser** to view the app. The frontend's health-check page
-   will show a green "Backend API" status once both are running.
-
-See the end of this document for a full step-by-step phone walkthrough,
-including creating the repo and uploading the project files.
-
----
-
-## Option B — Local machine
+# Classify setup guide
 
 ## Prerequisites
 
-- **Java 21+** (JDK) — LTS release, required by this project's `pom.xml`
-- **Maven 3.9+** (or use your IDE's bundled Maven)
-- **Node.js 20+** and npm
-- **Docker + Docker Compose** (for Postgres and MinIO)
+- Java 21 and Maven 3.9+
+- Node.js 20+ and npm
+- Docker with Docker Compose v2
 
-## 1. Start local infrastructure
+## Clean-clone local setup
 
-From the repo root:
+From the repository root, start PostgreSQL and MinIO:
 
 ```bash
 docker compose up -d
-```
-
-This starts:
-- **PostgreSQL** on `localhost:5432` — database `apptitle`, user/password `apptitle` / `apptitle_dev_password`
-- **MinIO** on `localhost:9000` (S3 API) and `localhost:9001` (web console) — credentials `apptitle_admin` / `apptitle_dev_password`
-
-Check both are healthy:
-
-```bash
 docker compose ps
 ```
 
-> MinIO buckets aren't created or used by code yet — that starts in Phase 4
-> (Learning Materials). The service is running now so later phases don't
-> require revisiting environment setup.
+Wait until both `apptitle-postgres` and `apptitle-minio` report healthy. The
+Compose credentials are local-development values only. PostgreSQL listens on
+5432; MinIO uses 9000 for its API and 9001 for its console.
 
-## 2. Backend
+Start the backend in a second terminal:
 
 ```bash
 cd backend
-cp .env.example .env
-```
-
-Fill in `.env` with real values before anything beyond local dev — the
-defaults baked into `application.yml` match `docker-compose.yml` exactly, so
-**local development works without editing `.env` at all**. The file exists
-so the required variables are documented up front.
-
-Run the backend:
-
-```bash
-# If you have Maven installed:
 mvn spring-boot:run
-
-# Or generate the wrapper once (requires network) and use it from then on:
-mvn -N io.takari:maven:wrapper -Dmaven=3.9.9
-./mvnw spring-boot:run
 ```
 
-The backend starts on **http://localhost:8080**. On first run, Hibernate
-creates the `users` table automatically (`ddl-auto: update` — see
-`application.yml`; this is replaced by a real migration tool before
-production).
+The default `dev` profile matches Docker Compose and creates/updates the local
+schema with Hibernate. It also creates the configured MinIO bucket. Verify the
+API at `http://localhost:8080/api/health`.
 
-Verify it's up:
-
-```bash
-curl http://localhost:8080/api/health
-```
-
-### Running backend tests
-
-Tests require the Postgres container from step 1 to be running:
-
-```bash
-mvn test
-```
-
-## 3. Frontend
+Start the frontend in a third terminal:
 
 ```bash
 cd frontend
-cp .env.example .env
-npm install
+npm ci
 npm run dev
 ```
 
-The frontend starts on **http://localhost:5173**. Open it in a browser —
-the landing page calls `GET /api/health` through Vite's dev proxy (see
-`vite.config.ts`) and shows whether the backend is reachable. A green dot
-means the full chain (React → Vite proxy → Spring Boot → this far, DB
-connectivity isn't exercised by `/api/health` itself, but Spring Boot won't
-start at all if it can't reach Postgres) is working.
+Open `http://localhost:5173`. Vite proxies `/api` to the backend.
 
-## 4. Environment variables reference
-
-### Backend (`backend/.env.example`)
-
-| Variable | Purpose | Local default |
-|---|---|---|
-| `DB_URL` | JDBC connection string | `jdbc:postgresql://localhost:5432/apptitle` |
-| `DB_USERNAME` / `DB_PASSWORD` | Postgres credentials | `apptitle` / `apptitle_dev_password` |
-| `JWT_SECRET` | Signing key for auth tokens (Phase 2+) | dev placeholder — **must** change before any shared/deployed environment |
-| `JWT_EXPIRATION_MS` | Token lifetime | `86400000` (24h) |
-| `MINIO_ENDPOINT` / `MINIO_ACCESS_KEY` / `MINIO_SECRET_KEY` / `MINIO_BUCKET` | MinIO/S3 connection (Phase 4+) | matches `docker-compose.yml` |
-| `MINIO_INITIALIZE_BUCKET` | Create the configured bucket at startup when missing | `true` |
-| `MINIO_PRESIGNED_EXPIRY_SECONDS` | Upload/download URL lifetime | `900` |
-| `MINIO_MAX_FILE_SIZE_BYTES` | Maximum learning-material file size | `524288000` |
-| `FRONTEND_ORIGIN` | Allowed CORS origin | `http://localhost:5173` |
-
-### Frontend (`frontend/.env.example`)
-
-| Variable | Purpose | Local default |
-|---|---|---|
-| `VITE_API_BASE_URL` | Absolute API origin | unused in dev (Vite proxy handles it); needed for Phase 10 production build |
-
-## 5. Common issues
-
-- **Backend fails to start with a connection refused error** — Postgres
-  isn't up yet. Run `docker compose ps` and check the `postgres` service is
-  `healthy`, not just `running`.
-- **Frontend shows a red "Backend API" status** — the backend isn't running,
-  or it's running on a different port than 8080. Check the terminal running
-  `spring-boot:run` for startup errors.
-- **Port already in use** — something else on your machine is using 5432,
-  8080, or 5173. Stop it, or change the mapped port in `docker-compose.yml` /
-  `application.yml` / `vite.config.ts` (keep all three consistent).
-
-## 6. What's next
-
-Phase 2 (Authentication) adds real login/registration, JWT issuance, and
-role-based route protection on both ends. Nothing in this setup changes when
-that lands — the scaffolding here is meant to be the last time the dev
-environment itself needs attention.
-
----
-
-## 7. Full phone walkthrough (GitHub Codespaces from scratch)
-
-Everything below can be done from a phone browser (Chrome/Safari). No
-computer required.
-
-### Step 1 — Create a GitHub account (skip if you have one)
-
-Go to `github.com`, sign up for free.
-
-### Step 2 — Create a new repository
-
-1. Tap the **+** icon (top right) → **New repository**.
-2. Name it (e.g. `apptitle-lms`).
-3. Set visibility to **Private** (recommended, since it's your school project).
-4. Leave "Add a README" unchecked — you're uploading files directly.
-5. Tap **Create repository**.
-
-### Step 3 — Upload the project zip
-
-1. On the new (empty) repo page, tap **Add file → Upload files**.
-2. Tap **choose your files**, select the `apptitle-phase1.zip` you downloaded
-   from this chat.
-3. Scroll down, tap **Commit changes**. The zip is now in the repo, but still
-   zipped — GitHub's uploader doesn't extract archives automatically.
-
-### Step 4 — Open a temporary Codespace to unzip and commit the real files
-
-1. Tap the green **Code** button → **Codespaces** tab → **Create codespace
-   on main**.
-2. This first Codespace won't have the devcontainer config active yet
-   (it's still zipped up), so it opens with GitHub's default environment —
-   that's fine, it still has `unzip` and `git`.
-3. In the terminal at the bottom of the screen, run:
-   ```bash
-   unzip apptitle-phase1.zip
-   mv apptitle/* apptitle/.[!.]* . 2>/dev/null
-   rmdir apptitle
-   rm apptitle-phase1.zip
-   git add -A
-   git commit -m "Add project scaffold with devcontainer config"
-   git push
-   ```
-4. Once that finishes, delete this Codespace (Codespaces tab on
-   github.com → **...** menu next to it → **Delete**) — you won't need it
-   again, and it stops counting against your free hours.
-
-### Step 5 — Open the real dev Codespace
-
-1. Back on the repo page: **Code → Codespaces → Create codespace on main**.
-2. This time GitHub detects `.devcontainer/devcontainer.json` and builds the
-   real environment automatically — Java 21, Node 20, Docker. This takes a
-   few minutes the first time only.
-3. Once it's ready, `npm install` and Postgres/MinIO startup happen
-   automatically in the background (check the terminal output).
-
-### Step 6 — Run the app
-
-Open two terminals (tap the `+` in the terminal panel for a second one):
+Local `.env` files are optional. Spring Boot does not read `.env` by itself;
+use a dotenv-aware IDE/shell or export variables before running Maven:
 
 ```bash
-# Terminal 1 — backend
-cd backend
-mvn spring-boot:run
-
-# Terminal 2 — frontend
-cd frontend
-npm run dev
+set -a
+source backend/.env
+set +a
+cd backend && mvn spring-boot:run
 ```
 
-### Step 7 — View it
+Never commit either `.env` file; repository ignore rules exclude them.
 
-A notification pops up when port `5173` (frontend) is detected — tap
-**Open in Browser**. You should see the APPTITLE status page with a green
-dot next to "Backend API." That confirms frontend → backend → (Spring Boot
-successfully started, meaning it also reached Postgres) is all working.
+## Verification
 
-### Ongoing use
+With PostgreSQL and MinIO healthy:
 
-- Each time you come back, just open the repo's **Codespaces** tab and
-  resume the existing one (don't recreate it — that eats your free hours
-  rebuilding). Codespaces auto-stops after ~30 minutes idle, and resuming
-  is fast.
-- Commit and push your work regularly (`git add -A && git commit -m "..."
-  && git push`) so nothing is lost if the Codespace is deleted.
-- Free tier is 60 hours/month on a 2-core machine — stop the Codespace
-  manually when you're done for the day if you want to conserve hours.
+```bash
+cd backend && mvn test
+cd ../frontend && npm run lint && npm run build
+```
 
+The main manual acceptance chain is: register teacher and student; teacher
+creates a Class Section and Subject; adviser requests the subject link; subject
+teacher approves it; student requests section enrollment; adviser approves it.
+Only then should the student see that subject and its materials, activities,
+grades, progress, and announcements.
+
+## Environment variables
+
+Backend variables are documented in `backend/.env.example`:
+
+| Variable | Required in production | Purpose |
+|---|---:|---|
+| `SPRING_PROFILES_ACTIVE=prod` | Yes | Enables schema validation and production logging. |
+| `DB_URL`, `DB_USERNAME`, `DB_PASSWORD` | Yes | PostgreSQL connection. |
+| `JWT_SECRET` | Yes | JWT signing secret; use a long random value. |
+| `JWT_EXPIRATION_MS` | No | Token lifetime; defaults to 24 hours. |
+| `MINIO_ENDPOINT`, `MINIO_ACCESS_KEY`, `MINIO_SECRET_KEY`, `MINIO_BUCKET` | Yes | S3-compatible object storage. |
+| `MINIO_INITIALIZE_BUCKET` | No | Defaults to `false` in production. Provision the bucket separately. |
+| `MINIO_PRESIGNED_EXPIRY_SECONDS` | No | Defaults to 900 seconds. |
+| `MINIO_MAX_FILE_SIZE_BYTES` | No | Defaults to 500 MiB. |
+| `FRONTEND_ORIGIN` | Yes | Exact allowed browser origin for CORS. |
+
+The frontend has one optional build variable: `VITE_API_BASE_URL`. Leave it
+unset when the SPA and API share an origin; otherwise set the full API base,
+for example `https://api.example.com/api`. Vite variables are public and must
+never contain secrets.
+
+## Existing databases and SQL scripts
+
+Back up an existing database before schema work. `migration_scripts/` contains
+manual, ordered feature migrations:
+
+1. `class_section_subject_migration.sql` (legacy Section conversion)
+2. `learning_materials_migration.sql`
+3. `activities_migration.sql` (also creates score proposals)
+4. `grades_migration.sql`
+5. `progress_migration.sql`
+6. `announcements_notifications_migration.sql`
+
+These scripts are not a complete fresh-schema migration chain: the original
+users/teachers/students baseline is still created by Hibernate in development.
+No Flyway or Liquibase dependency is installed. The production profile uses
+`ddl-auto=validate`, so production startup requires a pre-provisioned complete
+schema. Converting the full baseline to a versioned migration tool remains
+deployment work and must be treated as an explicit architecture change.
+
+## Production configuration check
+
+Run with `SPRING_PROFILES_ACTIVE=prod`. That profile requires database, JWT,
+CORS, and MinIO credentials from the environment and refuses to silently use
+the local defaults. It disables SQL output, reduces Spring Security logging,
+does not auto-create the object-storage bucket, and validates rather than
+mutates the database schema.
+
+Place TLS and a reverse proxy/load balancer in front of the API. Restrict the
+MinIO console and database from public access. The repository does not include
+a production deployment manifest or certificate automation.
+
+## Common failures
+
+- Connection refused at backend startup: wait for PostgreSQL health.
+- MinIO upload CORS errors: make `FRONTEND_ORIGIN` match the browser origin and
+  restart MinIO after changing it.
+- Production schema validation failure: provision the complete baseline and
+  apply the feature SQL in order; do not switch production to `ddl-auto=update`.
+- Browser API network errors: use same-origin `/api` or set
+  `VITE_API_BASE_URL` at frontend build time.

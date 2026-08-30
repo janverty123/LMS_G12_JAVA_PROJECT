@@ -13,4 +13,8 @@
   select {
     @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2;
   }
+
+  input[type="file"] {
+    max-width: 100%;
+  }
 }

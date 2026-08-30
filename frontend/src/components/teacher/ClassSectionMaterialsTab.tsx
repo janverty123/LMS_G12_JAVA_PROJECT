@@ -49,7 +49,7 @@ function MaterialSubjectPicker({
         <label className="text-sm font-medium text-slate-700">
           Subject
           <select
-            className="mt-1 block min-w-64 rounded-lg border border-slate-300 bg-white px-3 py-2"
+            className="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 sm:min-w-64"
             value={subjectId}
             onChange={(event) => setSubjectId(event.target.value)}
           >

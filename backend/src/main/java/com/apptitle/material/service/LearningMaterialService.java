@@ -23,6 +23,9 @@ import com.apptitle.teacher.entity.Teacher;
 import com.apptitle.teacher.repository.TeacherRepository;
 import com.apptitle.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
+import com.apptitle.notification.entity.NotificationType;
+import com.apptitle.notification.service.NotificationService;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
@@ -51,6 +54,12 @@ public class LearningMaterialService {
     private final UserRepository userRepository;
     private final MultipartStorage multipartStorage;
     private final MinioProperties minioProperties;
+    private NotificationService notificationService;
+
+    @Autowired(required = false)
+    void setNotificationService(NotificationService notificationService) {
+        this.notificationService = notificationService;
+    }
 
     public LearningMaterialService(
             LearningMaterialRepository learningMaterialRepository,
@@ -159,6 +168,12 @@ public class LearningMaterialService {
         material.setStatus(LearningMaterialStatus.COMPLETED);
         material.setCompletedAt(Instant.now());
         material = learningMaterialRepository.save(material);
+        if (notificationService != null) {
+            notificationService.notifyApprovedStudents(
+                    material.getClassSubjectLink().getClassSection(),
+                    NotificationType.NEW_MATERIAL,
+                    "New material: " + material.getTitle(), material.getId().toString());
+        }
         return toResponse(material);
     }
 

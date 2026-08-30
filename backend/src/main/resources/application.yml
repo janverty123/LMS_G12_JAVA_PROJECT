@@ -14,8 +14,8 @@ spring:
   jpa:
     open-in-view: false
     hibernate:
-      # 'update' is fine through early phases; Phase 10 (production readiness)
-      # replaces this with a real migration tool (Flyway) and switches to 'validate'.
+      # Local development uses update. Production overrides this with validate;
+      # apply the ordered SQL scripts in migration_scripts/ before startup.
       ddl-auto: update
     properties:
       hibernate:

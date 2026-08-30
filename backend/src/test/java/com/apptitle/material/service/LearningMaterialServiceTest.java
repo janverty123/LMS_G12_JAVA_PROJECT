@@ -306,6 +306,98 @@ class LearningMaterialServiceTest {
         verify(multipartStorage, never()).initiateUpload(anyString());
     }
 
+    @Test
+    void completeUpload_rejectsDuplicatePartNumbers() {
+        LearningMaterial material = initializedMaterial();
+        when(learningMaterialRepository.findById(material.getId()))
+                .thenReturn(Optional.of(material));
+
+        ApiException exception = assertThrows(ApiException.class, () ->
+                service.completeUpload(
+                        "subject@example.com",
+                        material.getId(),
+                        new CompleteUploadRequest(
+                                material.getUploadId(),
+                                material.getStorageKey(),
+                                List.of(
+                                        new CompleteUploadRequest.CompletedPart(1, "etag-1"),
+                                        new CompleteUploadRequest.CompletedPart(1, "etag-duplicate")
+                                )
+                        )
+                ));
+
+        assertEquals(400, exception.getStatus().value());
+        verify(multipartStorage, never()).completeUpload(anyString(), anyString(), any());
+    }
+
+    @Test
+    void completeUpload_rejectsMissingETag() {
+        LearningMaterial material = initializedMaterial();
+        when(learningMaterialRepository.findById(material.getId()))
+                .thenReturn(Optional.of(material));
+
+        ApiException exception = assertThrows(ApiException.class, () ->
+                service.completeUpload(
+                        "subject@example.com",
+                        material.getId(),
+                        new CompleteUploadRequest(
+                                material.getUploadId(),
+                                material.getStorageKey(),
+                                List.of(
+                                        new CompleteUploadRequest.CompletedPart(1, "etag-1"),
+                                        new CompleteUploadRequest.CompletedPart(2, " ")
+                                )
+                        )
+                ));
+
+        assertEquals(400, exception.getStatus().value());
+        verify(multipartStorage, never()).completeUpload(anyString(), anyString(), any());
+    }
+
+    @Test
+    void completeUpload_rejectsNonOwner() {
+        LearningMaterial material = initializedMaterial();
+        when(learningMaterialRepository.findById(material.getId()))
+                .thenReturn(Optional.of(material));
+
+        ApiException exception = assertThrows(ApiException.class, () ->
+                service.completeUpload(
+                        "other@example.com",
+                        material.getId(),
+                        new CompleteUploadRequest(
+                                material.getUploadId(),
+                                material.getStorageKey(),
+                                List.of(
+                                        new CompleteUploadRequest.CompletedPart(1, "etag-1"),
+                                        new CompleteUploadRequest.CompletedPart(2, "etag-2")
+                                )
+                        )
+                ));
+
+        assertEquals(403, exception.getStatus().value());
+        verify(multipartStorage, never()).completeUpload(anyString(), anyString(), any());
+    }
+
+    @Test
+    void getStudentDownload_rejectsMaterialFromAnotherClass() {
+        ClassSection otherClass = new ClassSection();
+        setId(otherClass);
+        ClassEnrollmentRequest enrollment = approvedEnrollment();
+        enrollment.setClassSection(otherClass);
+        LearningMaterial material = completedMaterial();
+        when(classEnrollmentRequestRepository.findByStudentIdAndStatus(
+                student.getId(), ClassEnrollmentRequestStatus.APPROVED))
+                .thenReturn(List.of(enrollment));
+        when(learningMaterialRepository.findById(material.getId()))
+                .thenReturn(Optional.of(material));
+
+        ApiException exception = assertThrows(ApiException.class, () ->
+                service.getStudentDownload("student@example.com", material.getId()));
+
+        assertEquals(403, exception.getStatus().value());
+        verify(multipartStorage, never()).presignDownload(anyString());
+    }
+
     private InitUploadRequest validRequest() {
         return new InitUploadRequest(
                 "Lesson slides",

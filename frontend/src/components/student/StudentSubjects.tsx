@@ -19,6 +19,14 @@ export function StudentSubjects({ subjects }: { subjects: SubjectResponse[] }) {
           >
             View materials →
           </Link>
+          <Link
+            to={`/student/subjects/${subject.id}/activities`}
+            className="ml-4 mt-4 inline-block text-sm font-semibold text-amber-700"
+          >
+            View activities →
+          </Link>
+          <Link to={`/student/subjects/${subject.id}/grades`} className="ml-4 mt-4 inline-block text-sm font-semibold text-amber-700">View grades →</Link>
+          <Link to={`/student/subjects/${subject.id}/progress`} className="ml-4 mt-4 inline-block text-sm font-semibold text-amber-700">View progress →</Link>
         </article>
       ))}
     </div>

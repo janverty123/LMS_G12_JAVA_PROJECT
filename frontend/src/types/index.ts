@@ -16,6 +16,10 @@ export interface HealthResponse {
 }
 
 export * from "./auth";
+export * from "./activity";
 export * from "./classSection";
+export * from "./grade";
 export * from "./material";
+export * from "./progress";
+export * from "./notification";
 export * from "./subject";

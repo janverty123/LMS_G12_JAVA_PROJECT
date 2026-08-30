@@ -1,17 +1,15 @@
 import axios, { AxiosError } from "axios";
 import type { ApiErrorResponse } from "@/types";
 
-// Same-origin "/api" — Vite's dev proxy (see vite.config.ts) forwards this to
-// the Spring Boot backend, so no absolute URL/env var is needed in dev.
-// In production this is served behind the same reverse proxy as the SPA.
+// Same-origin by default. VITE_API_BASE_URL supports deployments where the
+// frontend and API have different origins.
 export const api = axios.create({
-  baseURL: "/api",
+  baseURL: import.meta.env.VITE_API_BASE_URL || "/api",
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-// Phase 2 will populate this from the auth store once login/JWT exists.
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("apptitle_token");
   if (token) {

@@ -1,14 +1,14 @@
 # APPTITLE (Classify) — Project Status & Migration Brief
 
 **Prepared against:** *Classify — Modern Learning Management & Student Progress Monitoring System — Updated SRS and Architecture Specification.md*
-**As of:** Phase 4 Learning Materials implemented; database migrations pending per environment
+**As of 2026-08-29:** Phases 1–10 are complete within the agreed deadline scope. The focused hardening pass covered authorization, critical-path tests, mobile layout smoke fixes, setup/migration documentation, and production configuration checks; database migrations remain pending per environment.
 **Purpose of this document:** this is written to be handed to a coding agent as an implementation brief. Section 5 in particular is meant to be followed literally, in order, not just read for context.
 
 ---
 
 ## 1. Current Status
 
-The application is functional through the **Class Section / Subject migration** and **Phase 4 Learning Materials** — Java 21, Spring Boot 3.5.16, PostgreSQL, MinIO, GitHub Codespaces. Authentication, class enrollment, subject ownership, subject-link approval, and multipart material upload/download flows are implemented.
+The application is functional through **Announcements and Notifications** — Java 21, Spring Boot 3.5.16, PostgreSQL, MinIO, GitHub Codespaces. The core LMS workflows plus persistent, user-scoped notifications and section announcements are implemented.
 
 **Three architecture decisions are now implemented** (see Section 4):
 
@@ -51,18 +51,64 @@ Existing databases created with the legacy model must run `migration_scripts/cla
 - Backend services, controllers, migration SQL, and service tests implemented.
 - Teacher and student material screens, direct browser-to-MinIO chunk uploads, ETag capture, progress, cancellation, and transient-failure retry implemented.
 
+### Phase 5 — Activities *(implemented)*
+- Persistent activities with exactly Written Activity, Performance Task, and Test categories.
+- Subject-owner create, update, delete, and list APIs; approved-enrollment student read access.
+- Teacher and student activity screens, migration SQL, and service tests implemented.
+- Optional teacher attachments and student work submissions reuse the shared five MiB multipart uploader.
+- Submission roster, `NOT_SUBMITTED` / `SUBMITTED` / `LATE` / `GRADED` states, downloads, resubmission, and teacher score entry/editing implemented.
+
+### Phase 6 — Grades *(implemented)*
+- Per-Class/Subject grading weights for Written Activity, Performance Task, and Test, validated to total exactly 100%.
+- Backend-authoritative category averages and weighted final grades from graded submissions.
+- Teacher gradebook and student grade view implemented.
+- Server-generated `.xlsx` gradebook export implemented with Apache POI.
+
+### Phase 7 — Student Self-Submitted Scores *(implemented)*
+- Per-activity opt-in controls whether students may propose scores.
+- Reported score proof photos reuse the shared five MiB presigned multipart uploader.
+- `PENDING`, `APPROVED`, `REJECTED`, and `EDITED_APPROVED` review states implemented.
+- Only teacher approval writes the authoritative graded submission score; pending and rejected proposals are excluded from grade calculations.
+- Student and teacher review screens, ownership enforcement, migration SQL, and service tests implemented.
+
+### Phase 8 — Progress Monitoring *(implemented)*
+- Completion percentage and missing activities are calculated from actual student work submissions.
+- Current grade is sourced from the backend-authoritative weighted gradebook.
+- Teachers explicitly configure the On Track and Needs Attention boundaries per Class/Subject; no status thresholds are silently invented.
+- Teacher dashboard and student progress view expose completion, missing work, current grade, and status.
+
+### Phase 9 — Announcements & Notifications *(implemented)*
+- Class advisers can post, edit, and delete section announcements; only approved section members can read them.
+- PostgreSQL notification records are authoritative, user-scoped, and support read/unread state.
+- Triggers cover announcements, materials, activities, upcoming deadlines, score requests, released grades, and join-request lifecycle events.
+- WebSocket delivery was intentionally omitted because real-time transport is optional.
+
+### Phase 10 — Focused Hardening *(implemented within agreed scope)*
+- Reviewed every authenticated feature endpoint and documented its adviser,
+  Subject-owner, approved-enrollment, approved-link, or current-user boundary.
+- Closed cross-student access to score-proof downloads and added critical-path
+  authorization/calculation tests.
+- Hardened mobile navigation, class tabs, file inputs, and narrow form controls.
+- Updated clean-clone setup, migration limitations, environment variables, and
+  production-profile configuration. Exhaustive security/performance/deployment
+  certification remains explicitly out of scope.
+
 ---
 
-## 3. Needed
+## 3. Implementation Roadmap
 
-| Order | Scope | SRS reference |
-|---|---|---|
-| 5 | Activities — Written Activity / Performance Task / Test (exactly these 3) | §16–19 |
-| 6 | Grades — scoring, grading-weight config, category averages, final grade, Excel export | §22–25 |
-| 7 | Student self-submitted scores + proof photo, approve/reject/edit | §20–21 |
-| 8 | Progress monitoring — completion %, missing activities, status | §26 |
-| 9 | Announcements & notifications | §50 |
-| 10 | Security review, test coverage, responsive UI, deployment docs | §48, §52, §58, §61 |
+| Order | Scope | Status | SRS reference |
+|---|---|---|---|
+| 1 | Foundation | Complete | §37–42 |
+| 2 | Authentication | Complete | §4–5, §48 |
+| 3 | Class Section, Enrollment & Subject Management | Complete | §6–14 |
+| 4 | Learning Materials | Complete | §15, §27–36 |
+| 5 | Activities — Written Activity / Performance Task / Test (exactly these 3) | Complete | §16–19 |
+| 6 | Grades — scoring, grading-weight config, category averages, final grade, Excel export | Complete | §22–25 |
+| 7 | Student self-submitted scores + proof photo, approve/reject/edit | Complete | §20–21 |
+| 8 | Progress monitoring — completion %, missing activities, status | Complete | §26 |
+| 9 | Announcements & notifications | Complete | §50 |
+| 10 | Focused security review, critical tests, responsive smoke fixes, setup/production docs | Complete (agreed scope) | §48, §52, §58, §61 |
 
 ---
 
@@ -80,17 +126,17 @@ A Teacher account is not itself split into two roles (still one `TEACHER` user r
 ### 4.3 — CONFIRMED: Registration does not require a classroom code
 Per SRS §4.2/§9: registration and class-joining are two separate steps. `RegisterStudentRequest` loses its `classroomCode` field entirely. A newly registered student has no class access until they separately submit a join request using a Class Section's code.
 
-### 4.4 — Not yet built, locked by spec
-Grading categories are exactly three — Written Activity, Performance Task, Test (§16). No additional categories when Phase 5 starts.
+### 4.4 — Implemented activity categories
+Activity categories are exactly three — Written Activity, Performance Task, Test (§16). No additional categories are supported.
 
 ### 4.5 — Implemented upload contract
 File uploads (§27–36) use 5 MiB client chunks, server-generated presigned MinIO URLs, direct browser-to-MinIO uploads, ETag capture, a maximum of three attempts per part, and a completion endpoint that finalizes the multipart upload.
 
 ---
 
-## 5. Migration Plan — ClassSection / Subject Split
+## 5. Historical Migration Plan — ClassSection / Subject Split
 
-This section is the literal task list. Existing package/class names referenced below are real, current names in the codebase (`com.apptitle.*`).
+This completed migration plan is retained as a historical record. Existing package/class names referenced below are real, current names in the codebase (`com.apptitle.*`).
 
 ### 5.1 Entities to add
 

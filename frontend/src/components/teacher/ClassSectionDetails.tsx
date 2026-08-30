@@ -6,6 +6,10 @@ import { LoadingState } from "@/components/shared/LoadingState";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { ClassEnrollmentRequestList } from "./ClassEnrollmentRequestList";
 import { ClassSectionMaterialsTab } from "./ClassSectionMaterialsTab";
+import { ClassSectionActivitiesTab } from "./ClassSectionActivitiesTab";
+import { ClassSectionGradesTab } from "./ClassSectionGradesTab";
+import { ClassSectionProgressTab } from "./ClassSectionProgressTab";
+import { ClassSectionAnnouncementsTab } from "./ClassSectionAnnouncementsTab";
 import { classSectionService } from "@/services/classSection.service";
 import { getErrorMessage } from "@/services/errors";
 import { subjectService } from "@/services/subject.service";
@@ -22,7 +26,7 @@ export function ClassSectionDetails({ section }: { section: ClassSectionResponse
   const [links, setLinks] = useState<ClassSubjectLinkResponse[]>([]);
   const [subjectCode, setSubjectCode] = useState("");
   const [removeCandidate, setRemoveCandidate] = useState<ClassSectionMemberResponse | null>(null);
-  const [activeTab, setActiveTab] = useState<"overview" | "materials">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "materials" | "activities" | "grades" | "progress" | "announcements">("overview");
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -106,15 +110,15 @@ export function ClassSectionDetails({ section }: { section: ClassSectionResponse
       </div>
       {error && <ApiAlert message={error} />}
       {success && <ApiAlert message={success} tone="success" />}
-      <div className="flex gap-2 border-b border-slate-200" role="tablist">
-        {(["overview", "materials"] as const).map((tab) => (
+      <div className="flex gap-2 overflow-x-auto border-b border-slate-200" role="tablist">
+        {(["overview", "materials", "activities", "grades", "progress", "announcements"] as const).map((tab) => (
           <button
             key={tab}
             type="button"
             role="tab"
             aria-selected={activeTab === tab}
             onClick={() => setActiveTab(tab)}
-            className={`border-b-2 px-4 py-2 text-sm font-semibold capitalize ${
+            className={`shrink-0 border-b-2 px-3 py-2 text-sm font-semibold capitalize sm:px-4 ${
               activeTab === tab
                 ? "border-amber-600 text-amber-700"
                 : "border-transparent text-slate-500"
@@ -128,6 +132,14 @@ export function ClassSectionDetails({ section }: { section: ClassSectionResponse
         <LoadingState label="Loading class details…" />
       ) : activeTab === "materials" ? (
         <ClassSectionMaterialsTab classSectionId={section.id} links={links} />
+      ) : activeTab === "activities" ? (
+        <ClassSectionActivitiesTab classSectionId={section.id} links={links} />
+      ) : activeTab === "grades" ? (
+        <ClassSectionGradesTab classSectionId={section.id} links={links} />
+      ) : activeTab === "progress" ? (
+        <ClassSectionProgressTab classSectionId={section.id} links={links} />
+      ) : activeTab === "announcements" ? (
+        <ClassSectionAnnouncementsTab classSectionId={section.id} />
       ) : (
         <>
           <div>

@@ -1,0 +1,13 @@
+package com.apptitle.notification.entity;
+
+public enum NotificationType {
+    NEW_ANNOUNCEMENT,
+    NEW_MATERIAL,
+    NEW_ACTIVITY,
+    UPCOMING_DEADLINE,
+    SCORE_SUBMISSION_REQUEST,
+    RELEASED_GRADE,
+    JOIN_REQUEST_RECEIVED,
+    JOIN_REQUEST_APPROVED,
+    JOIN_REQUEST_DECLINED
+}
