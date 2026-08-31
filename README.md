@@ -1,4 +1,4 @@
-# APPTITLE — Learning Management with Student Progress Monitoring System
+# Classify — Learning Management with Student Progress Monitoring System
 
 Full-stack LMS for teachers and students: sections, master lists, materials,
 activities (Written / Performance / Periodical), scores, grade computation,
@@ -53,5 +53,3 @@ and XLSX export; student score proposals with teacher approval; progress;
 announcements; and persistent notifications. Phase 10 is a focused hardening
 pass. See [docs/PROJECT_STATUS.md](./docs/PROJECT_STATUS.md) for exact status and
 [docs/SETUP.md](./docs/SETUP.md) for clean-clone and production configuration.
-
-

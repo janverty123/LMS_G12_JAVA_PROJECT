@@ -1,4 +1,4 @@
-# APPTITLE Frontend
+# Classify Frontend
 
 React 18, TypeScript, Vite, and Tailwind provide the role-based UI for the Spring Boot API.
 

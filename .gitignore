@@ -2,6 +2,15 @@
 .DS_Store
 Thumbs.db
 
+# Local shell / Codespaces home artifacts
+.bash_history
+.bashrc
+.cache/
+.config/
+.gitconfig
+.local/
+.ssh/
+
 # IDEs
 .idea/
 .vscode/
@@ -20,6 +29,9 @@ backend/.mvn/wrapper/maven-wrapper.jar
 frontend/node_modules/
 frontend/dist/
 frontend/.vite/
+frontend/*.tsbuildinfo
+frontend/vite.config.js
+frontend/vite.config.d.ts
 
 # Logs
 *.log

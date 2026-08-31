@@ -1,11 +1,10 @@
 spring:
-  jpa:
-    open-in-view: false
   datasource:
     url: jdbc:postgresql://localhost:5432/apptitle
     username: apptitle
     password: apptitle_dev_password
   jpa:
+    open-in-view: false
     hibernate:
       ddl-auto: update
 

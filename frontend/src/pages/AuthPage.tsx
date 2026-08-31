@@ -43,7 +43,7 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
   return (
     <div className="grid min-h-screen place-items-center bg-slate-950 px-5 py-10">
       <div className="w-full max-w-md rounded-2xl bg-white p-7 shadow-2xl">
-        <p className="text-sm font-semibold uppercase tracking-wider text-amber-700">APPTITLE</p>
+        <p className="text-sm font-semibold uppercase tracking-wider text-amber-700">Classify</p>
         <h1 className="mt-2 text-2xl font-semibold">{mode === "login" ? "Welcome back" : "Create an account"}</h1>
         <p className="mt-1 text-sm text-slate-500">Learning management and progress monitoring</p>
 

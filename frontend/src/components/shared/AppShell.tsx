@@ -23,7 +23,7 @@ export function AppShell() {
       <header className="border-b border-slate-200 bg-white">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-5 py-4">
           <div>
-            <p className="font-semibold tracking-tight">APPTITLE</p>
+            <p className="font-semibold tracking-tight">Classify</p>
             <p className="text-xs text-slate-500">{user?.name} · {user?.role.toLowerCase()}</p>
           </div>
           <nav className="flex w-full items-center gap-1 overflow-x-auto pb-1 sm:w-auto sm:pb-0" aria-label="Primary navigation">

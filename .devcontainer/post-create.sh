@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-echo "==> Setting up APPTITLE dev environment"
+echo "==> Setting up Classify dev environment"
 
 # --- Backend: pre-fetch Maven dependencies so the first 'mvn spring-boot:run' is fast ---
 if [ -f backend/pom.xml ]; then
@@ -12,7 +12,7 @@ fi
 # --- Frontend: install npm dependencies ---
 if [ -f frontend/package.json ]; then
   echo "==> Installing frontend (npm) dependencies..."
-  (cd frontend && npm install)
+  (cd frontend && npm ci)
 fi
 
 # --- Seed .env files from examples if they don't exist yet ---
