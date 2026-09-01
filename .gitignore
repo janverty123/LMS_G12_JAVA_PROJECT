@@ -36,3 +36,6 @@ frontend/vite.config.d.ts
 
 # Logs
 *.log
+
+# Local Vercel project links
+**/.vercel/
