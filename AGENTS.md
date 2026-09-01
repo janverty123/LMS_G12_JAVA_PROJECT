@@ -24,10 +24,24 @@ Copy module `.env.example` files for local overrides; never commit secrets.
 
 Use four-space Java and two-space TypeScript/TSX indentation. Use `PascalCase` for Java classes, React components, and exported types; use `camelCase` for methods, variables, hooks, and functions. Keep Spring layers feature-local and use constructor injection. Preserve frontend double quotes and semicolons.
 
-Enforce authorization in the backend. Registration and class joining remain separate; students never join subjects directly. Activity categories are exactly Written Activity, Performance Task, and Test. Preserve ownership checks and the established direct-to-MinIO multipart upload contract.
+Enforce authorization in the backend. Registration and class joining remain separate; students never join subjects directly. Activity categories are exactly Written Activity, Performance Task, and Test. Preserve ownership checks and the established direct-to-S3-compatible-storage multipart upload contract.
 
 ## Testing & Contributions
 
 Name backend tests `*Test` and methods by behavior, such as `registerStudent_rejectsDuplicateLrn`. Cover success, validation, authorization, duplicate, and failure paths. Frontend changes must pass lint and production build.
 
 Use focused, imperative commits; Conventional Commit prefixes such as `feat:` and `fix:` are encouraged. Pull requests should explain the problem and solution, list verification commands, link issues, note schema/configuration changes, and include screenshots for UI work. Back up databases and review migration preflight steps before applying SQL.
+
+## Agent skills
+
+### Issue tracker
+
+Track issues and specs in this repository's GitHub Issues. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Use the five default Matt Pocock triage roles and label names. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Use the single-context domain-documentation layout. See `docs/agents/domain.md`.
