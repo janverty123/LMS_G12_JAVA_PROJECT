@@ -124,7 +124,7 @@ export function MaterialUploadForm({
           </div>
           <div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-200">
             <div
-              className="h-full rounded-full bg-amber-600 transition-all"
+              className="h-full rounded-full bg-[var(--accent)] transition-all"
               style={{ width: `${progress.percentage}%` }}
             />
           </div>
@@ -137,7 +137,7 @@ export function MaterialUploadForm({
       <div className="mt-4 flex gap-3">
         <button
           disabled={busy}
-          className="rounded-lg bg-amber-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
+          className="rounded-lg bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
         >
           {busy ? "Uploading…" : "Upload material"}
         </button>

@@ -128,7 +128,7 @@ export function StudentActivitiesPage() {
               {attachments.map((attachment) => (
                 <button
                   key={attachment.id}
-                  className="mr-3 mt-2 text-sm text-amber-700"
+                  className="mr-3 mt-2 text-sm text-[var(--accent-strong)]"
                   onClick={() =>
                     void activityService.downloadFile(attachment.id, true)
                   }
@@ -149,7 +149,7 @@ export function StudentActivitiesPage() {
           </p>
           {submission?.file && (
             <button
-              className="text-sm font-medium text-amber-700"
+              className="text-sm font-medium text-[var(--accent-strong)]"
               onClick={() =>
                 void activityService.downloadFile(submission.file!.id, true)
               }
@@ -164,7 +164,7 @@ export function StudentActivitiesPage() {
             />
             <button
               disabled={!file || busy}
-              className="rounded-lg bg-amber-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
+              className="rounded-lg bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
               onClick={() => void submit()}
             >
               {submission?.submissionId ? "Resubmit work" : "Submit work"}
@@ -208,7 +208,7 @@ export function StudentActivitiesPage() {
                   <button
                     disabled={!proof || reportedScore === "" || busy}
                     onClick={() => void submitProposal()}
-                    className="rounded-lg bg-amber-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
+                    className="rounded-lg bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
                   >
                     Submit score proposal
                   </button>

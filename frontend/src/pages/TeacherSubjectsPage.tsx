@@ -123,7 +123,7 @@ export function TeacherSubjectsPage() {
           <input required className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2" placeholder="General Mathematics" value={name} onChange={(event) => setName(event.target.value)} />
         </label>
         <div className="flex items-end gap-2">
-          <button disabled={busy} className="rounded-lg bg-amber-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60">{editing ? "Save" : "Create"}</button>
+          <button disabled={busy} className="rounded-lg bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white disabled:opacity-60">{editing ? "Save" : "Create"}</button>
           {editing && <button type="button" onClick={() => { setEditing(undefined); setName(""); }} className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium">Cancel</button>}
         </div>
       </form>}
@@ -134,10 +134,10 @@ export function TeacherSubjectsPage() {
         ) : (
           <div className={`grid gap-3 md:grid-cols-2 ${selected ? "hidden" : ""}`}>
             {subjects.map((subject) => (
-              <article key={subject.id} className={`rounded-xl border bg-white p-5 shadow-sm ${selected?.id === subject.id ? "border-amber-500 ring-1 ring-amber-500" : "border-slate-200"}`}>
+              <article key={subject.id} className={`rounded-xl border bg-white p-5 shadow-sm ${selected?.id === subject.id ? "border-[var(--accent)] ring-1 ring-[var(--accent)]" : "border-slate-200"}`}>
                 <button className="w-full text-left" type="button" onClick={() => setSelected(subject)}>
                   <h2 className="font-semibold">{subject.name}</h2>
-                  <p className="mt-2 font-mono text-sm font-bold tracking-widest text-amber-800">{subject.subjectCode}</p>
+                  <p className="mt-2 font-mono text-sm font-bold tracking-widest text-[var(--accent-strong)]">{subject.subjectCode}</p>
                 </button>
                 <div className="mt-4 flex gap-3 border-t border-slate-100 pt-3">
                   <button type="button" className="text-sm font-medium text-slate-600" onClick={() => startEdit(subject)}>Edit</button>

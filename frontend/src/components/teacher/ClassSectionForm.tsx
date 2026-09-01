@@ -67,7 +67,7 @@ export function ClassSectionForm({
       </div>
       {error && <div className="mt-4"><ApiAlert message={error} /></div>}
       <div className="mt-4 flex gap-3">
-        <button disabled={busy} className="rounded-lg bg-amber-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60">
+        <button disabled={busy} className="rounded-lg bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white disabled:opacity-60">
           {busy ? "Saving…" : section ? "Save changes" : "Create section"}
         </button>
         {section && onCancel && (
