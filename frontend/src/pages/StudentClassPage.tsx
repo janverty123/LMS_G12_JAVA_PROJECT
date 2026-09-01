@@ -41,8 +41,7 @@ export function StudentClassPage() {
 
   return (
     <div>
-      <h1 className="text-3xl font-semibold tracking-tight">My class section</h1>
-      <p className="mt-1 text-slate-500">Join a class and track your enrollment request.</p>
+      <div className="page-heading"><h1>My Class</h1><p>Join a class and track your enrollment request.</p></div>
       {error && <div className="mt-5"><ApiAlert message={error} /></div>}
       {success && <div className="mt-5"><ApiAlert message={success} tone="success" /></div>}
       <div className="mt-6">{loading ? <LoadingState label="Loading your class…" /> : <StudentClassSection section={section} />}</div>

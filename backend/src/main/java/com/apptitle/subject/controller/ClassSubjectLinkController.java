@@ -68,6 +68,14 @@ public class ClassSubjectLinkController {
         return ResponseEntity.ok(classSubjectLinkService.listPendingLinksForSubject(authentication.getName(), subjectId));
     }
 
+    @GetMapping("/subjects/{subjectId}/links")
+    public ResponseEntity<List<ClassSubjectLinkResponse>> listLinksForSubject(
+            @PathVariable UUID subjectId,
+            Authentication authentication
+    ) {
+        return ResponseEntity.ok(classSubjectLinkService.listLinksForSubject(authentication.getName(), subjectId));
+    }
+
     @GetMapping("/class-sections/{classSectionId}/subjects")
     public ResponseEntity<List<ClassSubjectLinkResponse>> listSubjectsForClassSection(
             @PathVariable UUID classSectionId,

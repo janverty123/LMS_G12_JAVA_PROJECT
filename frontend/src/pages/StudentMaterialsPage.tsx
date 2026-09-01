@@ -6,6 +6,7 @@ import { MaterialList } from "@/components/shared/MaterialList";
 import { getErrorMessage } from "@/services/errors";
 import { materialService } from "@/services/material.service";
 import type { LearningMaterialResponse } from "@/types";
+import { StudentSubjectHeader } from "@/components/student/StudentSubjectHeader";
 
 export function StudentMaterialsPage() {
   const { subjectId } = useParams();
@@ -33,11 +34,8 @@ export function StudentMaterialsPage() {
 
   return (
     <div>
-      <Link to="/student/subjects" className="text-sm font-medium text-amber-700">
-        ← Back to subjects
-      </Link>
-      <h1 className="mt-3 text-3xl font-semibold tracking-tight">Learning materials</h1>
-      <p className="mt-1 text-slate-500">View and download resources shared with your class.</p>
+      <StudentSubjectHeader />
+      <div className="mb-5 flex items-center justify-between"><h2 className="text-2xl font-semibold">Learning Materials</h2><Link to="/student/subjects" className="text-sm font-medium text-[var(--accent-strong)]">← My Subjects</Link></div>
       {error && <div className="mt-5"><ApiAlert message={error} /></div>}
       <div className="mt-6">
         {loading ? (

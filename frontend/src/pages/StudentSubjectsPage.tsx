@@ -26,8 +26,7 @@ export function StudentSubjectsPage() {
 
   return (
     <div>
-      <h1 className="text-3xl font-semibold tracking-tight">My subjects</h1>
-      <p className="mt-1 text-slate-500">Subjects approved for your current class section.</p>
+      <div className="page-heading"><h1>My Subjects</h1><p>Subjects approved for your current class section.</p></div>
       {error && <div className="mt-5"><ApiAlert message={error} /></div>}
       <div className="mt-6">{loading ? <LoadingState label="Loading subjects…" /> : <StudentSubjects subjects={subjects} />}</div>
     </div>

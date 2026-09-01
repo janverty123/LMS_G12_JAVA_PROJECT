@@ -22,6 +22,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.Optional;
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -142,6 +143,22 @@ class ClassSubjectLinkServiceTest {
                 service.declineLink("other@example.com", link.getId()));
 
         assertEquals(403, exception.getStatus().value());
+    }
+
+    @Test
+    void listLinksForSubject_returnsAllStatusesForSubjectOwner() {
+        ClassSubjectLink pending = pendingLink();
+        ClassSubjectLink approved = pendingLink();
+        approved.setStatus(ClassSubjectLinkStatus.APPROVED);
+        when(subjectRepository.findById(subject.getId())).thenReturn(Optional.of(subject));
+        when(linkRepository.findBySubjectId(subject.getId()))
+                .thenReturn(List.of(pending, approved));
+
+        var responses = service.listLinksForSubject("subject@example.com", subject.getId());
+
+        assertEquals(2, responses.size());
+        assertEquals(ClassSubjectLinkStatus.PENDING, responses.get(0).status());
+        assertEquals(ClassSubjectLinkStatus.APPROVED, responses.get(1).status());
     }
 
     private ClassSubjectLink pendingLink() {

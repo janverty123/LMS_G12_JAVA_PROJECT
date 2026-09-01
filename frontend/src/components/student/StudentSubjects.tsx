@@ -10,23 +10,10 @@ export function StudentSubjects({ subjects }: { subjects: SubjectResponse[] }) {
   return (
     <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
       {subjects.map((subject) => (
-        <article key={subject.id} className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        <article key={subject.id} className="panel">
           <h2 className="font-semibold">{subject.name}</h2>
           <p className="mt-1 text-sm text-slate-500">Teacher {subject.subjectTeacherName}</p>
-          <Link
-            to={`/student/subjects/${subject.id}/materials`}
-            className="mt-4 inline-block text-sm font-semibold text-amber-700"
-          >
-            View materials →
-          </Link>
-          <Link
-            to={`/student/subjects/${subject.id}/activities`}
-            className="ml-4 mt-4 inline-block text-sm font-semibold text-amber-700"
-          >
-            View activities →
-          </Link>
-          <Link to={`/student/subjects/${subject.id}/grades`} className="ml-4 mt-4 inline-block text-sm font-semibold text-amber-700">View grades →</Link>
-          <Link to={`/student/subjects/${subject.id}/progress`} className="ml-4 mt-4 inline-block text-sm font-semibold text-amber-700">View progress →</Link>
+          <Link to={`/student/subjects/${subject.id}/materials`} className="button button--primary mt-5">Open Subject</Link>
         </article>
       ))}
     </div>

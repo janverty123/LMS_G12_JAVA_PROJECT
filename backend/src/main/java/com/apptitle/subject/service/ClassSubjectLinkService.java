@@ -96,6 +96,15 @@ public class ClassSubjectLinkService {
     }
 
     @Transactional(readOnly = true)
+    public List<ClassSubjectLinkResponse> listLinksForSubject(String teacherEmail, UUID subjectId) {
+        Subject subject = resolveOwnedSubject(teacherEmail, subjectId);
+        return classSubjectLinkRepository.findBySubjectId(subject.getId())
+                .stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
     public List<ClassSubjectLinkResponse> listLinksForClassSection(String teacherEmail, UUID classSectionId) {
         ClassSection classSection = resolveOwnedClassSection(teacherEmail, classSectionId);
         return classSubjectLinkRepository.findByClassSectionId(classSection.getId())

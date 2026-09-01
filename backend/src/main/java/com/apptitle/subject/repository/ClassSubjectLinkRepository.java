@@ -12,6 +12,8 @@ public interface ClassSubjectLinkRepository extends JpaRepository<ClassSubjectLi
 
     List<ClassSubjectLink> findBySubjectIdAndStatus(UUID subjectId, ClassSubjectLinkStatus status);
 
+    List<ClassSubjectLink> findBySubjectId(UUID subjectId);
+
     List<ClassSubjectLink> findByClassSectionId(UUID classSectionId);
 
     List<ClassSubjectLink> findByClassSectionIdAndStatus(

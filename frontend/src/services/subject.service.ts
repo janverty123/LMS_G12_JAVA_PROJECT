@@ -46,6 +46,14 @@ export const subjectService = {
     ).data;
   },
 
+  async listLinksForSubject(subjectId: string) {
+    return (
+      await api.get<ClassSubjectLinkResponse[]>(
+        `/teacher/subjects/${subjectId}/links`
+      )
+    ).data;
+  },
+
   async approveLink(id: string) {
     return (
       await api.put<ClassSubjectLinkResponse>(

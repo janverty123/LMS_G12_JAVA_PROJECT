@@ -58,9 +58,9 @@ export function TeacherClassSectionsPage() {
 
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="text-3xl font-semibold tracking-tight">Class sections</h1>
-        <p className="mt-1 text-slate-500">Manage class codes, students, and subject links.</p>
+      <div className="page-heading mb-6">
+        <h1>Classes</h1>
+        <p>Manage class codes, students, and subject links.</p>
       </div>
       {error && <div className="mb-4"><ApiAlert message={error} /></div>}
       <ClassSectionForm section={editing} onSaved={saved} onCancel={() => setEditing(undefined)} />
