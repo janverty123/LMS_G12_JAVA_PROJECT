@@ -39,6 +39,7 @@ app:
 
 minio:
   endpoint: ${MINIO_ENDPOINT:http://localhost:9000}
+  region: ${MINIO_REGION:us-east-1}
   access-key: ${MINIO_ACCESS_KEY:apptitle_admin}
   secret-key: ${MINIO_SECRET_KEY:apptitle_dev_password}
   bucket: ${MINIO_BUCKET:apptitle-files}

@@ -68,7 +68,7 @@ class ActivitySubmissionServiceTest {
         service = new ActivitySubmissionService(activityRepository, fileRepository,
                 submissionRepository, enrollmentRepository, teacherRepository,
                 studentRepository, userRepository, storage,
-                new MinioProperties("http://localhost:9000", "key", "secret",
+                new MinioProperties("http://localhost:9000", "us-east-1", "key", "secret",
                         "test", 900, 500L * 1024 * 1024));
         teacher = teacher("teacher@example.com");
         student = student("student@example.com");

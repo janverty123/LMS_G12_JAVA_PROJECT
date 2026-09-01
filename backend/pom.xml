@@ -72,11 +72,11 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- File storage (client only added now; buckets used starting Phase 4) -->
+        <!-- S3-compatible file storage (MinIO locally, Supabase in production) -->
         <dependency>
-            <groupId>io.minio</groupId>
-            <artifactId>minio</artifactId>
-            <version>8.5.12</version>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>s3</artifactId>
+            <version>2.31.77</version>
         </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>

@@ -78,6 +78,7 @@ class LearningMaterialServiceTest {
                 multipartStorage,
                 new MinioProperties(
                         "http://localhost:9000",
+                        "us-east-1",
                         "test",
                         "test",
                         "materials-test",

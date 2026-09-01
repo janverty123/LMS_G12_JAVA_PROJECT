@@ -11,6 +11,7 @@ import org.springframework.validation.annotation.Validated;
 @ConfigurationProperties(prefix = "minio")
 public record MinioProperties(
         @NotBlank String endpoint,
+        @NotBlank String region,
         @NotBlank String accessKey,
         @NotBlank String secretKey,
         @NotBlank String bucket,
