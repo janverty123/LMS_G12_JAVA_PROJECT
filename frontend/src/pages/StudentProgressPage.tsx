@@ -30,14 +30,14 @@ export function StudentProgressPage() {
           ["Current grade", value.currentGrade],
           ["Status", value.statusLabel],
         ].map(([label, item]) => (
-          <div key={label as string} className="rounded-xl border bg-white p-5">
-            <p className="text-sm text-slate-500">{label}</p>
+          <div key={label as string} className="panel">
+            <p className="text-sm text-[var(--text-muted)]">{label}</p>
             <p className="mt-2 text-2xl font-bold">{item}</p>
           </div>
         ))}
       </div>
       {value.missingActivities.length > 0 && (
-        <div className="mt-6 rounded-xl border bg-white p-5">
+        <div className="panel mt-6">
           <h2 className="font-semibold">Missing Activities</h2>
           <ul className="mt-2 list-disc pl-5 text-sm">
             {value.missingActivities.map((item) => (

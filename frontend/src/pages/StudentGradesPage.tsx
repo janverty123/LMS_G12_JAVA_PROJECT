@@ -30,8 +30,8 @@ export function StudentGradesPage() {
           ["Test", grade.testAverage],
           ["Final Grade", grade.finalGrade],
         ].map(([label, value]) => (
-          <div key={label as string} className="rounded-xl border bg-white p-5">
-            <p className="text-sm text-slate-500">{label}</p>
+          <div key={label as string} className="panel">
+            <p className="text-sm text-[var(--text-muted)]">{label}</p>
             <p className="mt-2 text-3xl font-bold">{value as number}</p>
           </div>
         ))}

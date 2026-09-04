@@ -155,7 +155,7 @@ export function ClassSectionDetails({
           <p className="mt-1 text-sm text-[var(--text-muted)]">
             Enter a subject code from a subject teacher to send a link request.
           </p>
-          <form className="mt-4 flex max-w-2xl gap-3" onSubmit={submitLink}>
+          <form className="responsive-form-row mt-4" onSubmit={submitLink}>
             <input
               required
               minLength={7}
@@ -180,7 +180,7 @@ export function ClassSectionDetails({
               />
             </div>
           ) : (
-            <div className="mt-3 overflow-x-auto">
+            <div className="mt-3 scroll-table">
               <table className="w-full text-left text-sm">
                 <thead>
                   <tr>
@@ -196,9 +196,7 @@ export function ClassSectionDetails({
                       className="border-t border-[var(--border)]"
                     >
                       <td className="px-3 py-3">{link.subjectName}</td>
-                      <td className="px-3 py-3">
-                      —
-                      </td>
+                      <td className="px-3 py-3">—</td>
                       <td className="px-3 py-3">
                         <StatusBadge status={link.status} />
                       </td>
@@ -219,7 +217,7 @@ export function ClassSectionDetails({
                 detail="Approved students will appear here."
               />
             ) : (
-              <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+              <div className="scroll-table rounded-xl border border-slate-200 bg-white">
                 <table className="w-full text-left text-sm">
                   <thead className="bg-slate-50 text-slate-600">
                     <tr>

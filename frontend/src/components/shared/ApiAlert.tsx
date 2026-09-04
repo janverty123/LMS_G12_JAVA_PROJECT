@@ -5,13 +5,13 @@ export function ApiAlert({
   message: string;
   tone?: "error" | "success";
 }) {
-  const colors =
-    tone === "success"
-      ? "border-emerald-200 bg-emerald-50 text-emerald-800"
-      : "border-rose-200 bg-rose-50 text-rose-800";
+  const colors = tone === "success" ? "api-alert--success" : "api-alert--error";
 
   return (
-    <div className={`rounded-lg border px-4 py-3 text-sm ${colors}`} role="alert">
+    <div
+      className={`rounded-lg border px-4 py-3 text-sm ${colors}`}
+      role="alert"
+    >
       {message}
     </div>
   );

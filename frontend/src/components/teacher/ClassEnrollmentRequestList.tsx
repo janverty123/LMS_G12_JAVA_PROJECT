@@ -42,7 +42,7 @@ export function ClassEnrollmentRequestList({
             <p className="font-medium">{request.studentName}</p>
             <p className="text-sm text-slate-500">LRN {request.studentLrn}</p>
           </div>
-          <div className="flex gap-2">
+          <div className="responsive-actions">
             <button
               disabled={Boolean(activeId)}
               onClick={() => act(request.id, onApprove)}

@@ -16,9 +16,12 @@ export function TeacherSubjectsPage() {
   const [subjects, setSubjects] = useState<SubjectResponse[]>([]);
   const [selected, setSelected] = useState<SubjectResponse>();
   const [editing, setEditing] = useState<SubjectResponse>();
-  const [deleteCandidate, setDeleteCandidate] = useState<SubjectResponse | null>(null);
+  const [deleteCandidate, setDeleteCandidate] =
+    useState<SubjectResponse | null>(null);
   const [requests, setRequests] = useState<ClassSubjectLinkResponse[]>([]);
-  const [activeTab, setActiveTab] = useState<"materials" | "requirements" | "grades" | "progress" | "requests">("materials");
+  const [activeTab, setActiveTab] = useState<
+    "materials" | "requirements" | "grades" | "progress" | "requests"
+  >("materials");
   const [classSectionId, setClassSectionId] = useState("");
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(true);
@@ -46,14 +49,22 @@ export function TeacherSubjectsPage() {
       const links = await subjectService.listLinksForSubject(selected.id);
       setRequests(links);
       const approved = links.filter((link) => link.status === "APPROVED");
-      setClassSectionId((current) => approved.some((link) => link.classSectionId === current) ? current : approved[0]?.classSectionId ?? "");
+      setClassSectionId((current) =>
+        approved.some((link) => link.classSectionId === current)
+          ? current
+          : (approved[0]?.classSectionId ?? ""),
+      );
     } catch (requestError) {
       setError(getErrorMessage(requestError));
     }
   }, [selected]);
 
-  useEffect(() => { void loadSubjects(); }, [loadSubjects]);
-  useEffect(() => { void loadRequests(); }, [loadRequests]);
+  useEffect(() => {
+    void loadSubjects();
+  }, [loadSubjects]);
+  useEffect(() => {
+    void loadRequests();
+  }, [loadRequests]);
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
@@ -63,9 +74,13 @@ export function TeacherSubjectsPage() {
       const saved = editing
         ? await subjectService.updateSubject(editing.id, name)
         : await subjectService.createSubject(name);
-      setSubjects((current) => editing
-        ? current.map((subject) => subject.id === saved.id ? saved : subject)
-        : [saved, ...current]);
+      setSubjects((current) =>
+        editing
+          ? current.map((subject) =>
+              subject.id === saved.id ? saved : subject,
+            )
+          : [saved, ...current],
+      );
       setSelected(saved);
       setEditing(undefined);
       setName("");
@@ -87,7 +102,9 @@ export function TeacherSubjectsPage() {
     setError("");
     try {
       await subjectService.deleteSubject(deleteCandidate.id);
-      setSubjects((current) => current.filter((subject) => subject.id !== deleteCandidate.id));
+      setSubjects((current) =>
+        current.filter((subject) => subject.id !== deleteCandidate.id),
+      );
       if (selected?.id === deleteCandidate.id) setSelected(undefined);
       if (editing?.id === deleteCandidate.id) {
         setEditing(undefined);
@@ -114,34 +131,100 @@ export function TeacherSubjectsPage() {
 
   return (
     <div>
-      <div className="page-heading"><h1>{selected?.name ?? "Subjects"}</h1><p>{selected ? selected.subjectTeacherName : "Create subjects and review requests from class advisers."}</p></div>
-      {error && <div className="mt-5"><ApiAlert message={error} /></div>}
-
-      {!selected && <form className="mt-6 flex max-w-xl flex-wrap gap-3 rounded-xl border border-slate-200 bg-white p-5 shadow-sm" onSubmit={submit}>
-        <label className="w-full min-w-0 flex-1 text-sm font-medium text-slate-700 sm:min-w-64">
-          {editing ? "Subject name" : "New subject name"}
-          <input required className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2" placeholder="General Mathematics" value={name} onChange={(event) => setName(event.target.value)} />
-        </label>
-        <div className="flex items-end gap-2">
-          <button disabled={busy} className="rounded-lg bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white disabled:opacity-60">{editing ? "Save" : "Create"}</button>
-          {editing && <button type="button" onClick={() => { setEditing(undefined); setName(""); }} className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium">Cancel</button>}
+      <div className="page-heading">
+        <h1>{selected?.name ?? "Subjects"}</h1>
+        <p>
+          {selected
+            ? selected.subjectTeacherName
+            : "Create subjects and review requests from class advisers."}
+        </p>
+      </div>
+      {error && (
+        <div className="mt-5">
+          <ApiAlert message={error} />
         </div>
-      </form>}
+      )}
 
-      <div className={selected ? "mt-7" : "mt-7"}>
-        {loading ? <LoadingState label="Loading subjects…" /> : !subjects.length ? (
-          <EmptyState title="No subjects yet" detail="Create a subject to generate its seven-character code." />
+      {!selected && (
+        <form
+          className="mt-6 flex max-w-xl flex-wrap gap-3 rounded-xl border border-slate-200 bg-white p-5 shadow-sm"
+          onSubmit={submit}
+        >
+          <label className="w-full min-w-0 flex-1 text-sm font-medium text-slate-700 sm:min-w-64">
+            {editing ? "Subject name" : "New subject name"}
+            <input
+              required
+              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
+              placeholder="General Mathematics"
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+            />
+          </label>
+          <div className="responsive-actions items-end">
+            <button
+              disabled={busy}
+              className="rounded-lg bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
+            >
+              {editing ? "Save" : "Create"}
+            </button>
+            {editing && (
+              <button
+                type="button"
+                onClick={() => {
+                  setEditing(undefined);
+                  setName("");
+                }}
+                className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium"
+              >
+                Cancel
+              </button>
+            )}
+          </div>
+        </form>
+      )}
+
+      <div className="mt-7">
+        {loading ? (
+          <LoadingState label="Loading subjects…" />
+        ) : !subjects.length ? (
+          <EmptyState
+            title="No subjects yet"
+            detail="Create a subject to generate its seven-character code."
+          />
         ) : (
-          <div className={`grid gap-3 md:grid-cols-2 ${selected ? "hidden" : ""}`}>
+          <div
+            className={`grid gap-3 md:grid-cols-2 ${selected ? "hidden" : ""}`}
+          >
             {subjects.map((subject) => (
-              <article key={subject.id} className={`rounded-xl border bg-white p-5 shadow-sm ${selected?.id === subject.id ? "border-[var(--accent)] ring-1 ring-[var(--accent)]" : "border-slate-200"}`}>
-                <button className="w-full text-left" type="button" onClick={() => setSelected(subject)}>
+              <article
+                key={subject.id}
+                className={`rounded-xl border bg-white p-5 shadow-sm ${selected?.id === subject.id ? "border-[var(--accent)] ring-1 ring-[var(--accent)]" : "border-slate-200"}`}
+              >
+                <button
+                  className="w-full text-left"
+                  type="button"
+                  onClick={() => setSelected(subject)}
+                >
                   <h2 className="font-semibold">{subject.name}</h2>
-                  <p className="mt-2 font-mono text-sm font-bold tracking-widest text-[var(--accent-strong)]">{subject.subjectCode}</p>
+                  <p className="mt-2 font-mono text-sm font-bold tracking-widest text-[var(--accent-strong)]">
+                    {subject.subjectCode}
+                  </p>
                 </button>
-                <div className="mt-4 flex gap-3 border-t border-slate-100 pt-3">
-                  <button type="button" className="text-sm font-medium text-slate-600" onClick={() => startEdit(subject)}>Edit</button>
-                  <button type="button" className="text-sm font-medium text-rose-600" onClick={() => setDeleteCandidate(subject)}>Delete</button>
+                <div className="responsive-actions mt-4 border-t border-slate-100 pt-3">
+                  <button
+                    type="button"
+                    className="text-sm font-medium text-slate-600"
+                    onClick={() => startEdit(subject)}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    type="button"
+                    className="text-sm font-medium text-rose-600"
+                    onClick={() => setDeleteCandidate(subject)}
+                  >
+                    Delete
+                  </button>
                 </div>
               </article>
             ))}
@@ -149,18 +232,26 @@ export function TeacherSubjectsPage() {
         )}
       </div>
 
-      {selected && <SubjectWorkspace
-        subject={selected}
-        links={requests}
-        activeTab={activeTab}
-        classSectionId={classSectionId}
-        onTab={setActiveTab}
-        onClassSection={setClassSectionId}
-        onApprove={(id) => decideLink(id, "approve")}
-        onDecline={(id) => decideLink(id, "decline")}
-        onBack={() => { setSelected(undefined); setActiveTab("materials"); }}
-        onEdit={() => { startEdit(selected); setSelected(undefined); }}
-      />}
+      {selected && (
+        <SubjectWorkspace
+          subject={selected}
+          links={requests}
+          activeTab={activeTab}
+          classSectionId={classSectionId}
+          onTab={setActiveTab}
+          onClassSection={setClassSectionId}
+          onApprove={(id) => decideLink(id, "approve")}
+          onDecline={(id) => decideLink(id, "decline")}
+          onBack={() => {
+            setSelected(undefined);
+            setActiveTab("materials");
+          }}
+          onEdit={() => {
+            startEdit(selected);
+            setSelected(undefined);
+          }}
+        />
+      )}
 
       <ConfirmDialog
         open={Boolean(deleteCandidate)}
@@ -191,7 +282,9 @@ function SubjectWorkspace({
   links: ClassSubjectLinkResponse[];
   activeTab: "materials" | "requirements" | "grades" | "progress" | "requests";
   classSectionId: string;
-  onTab: (tab: "materials" | "requirements" | "grades" | "progress" | "requests") => void;
+  onTab: (
+    tab: "materials" | "requirements" | "grades" | "progress" | "requests",
+  ) => void;
   onClassSection: (id: string) => void;
   onApprove: (id: string) => Promise<void>;
   onDecline: (id: string) => Promise<void>;
@@ -200,26 +293,105 @@ function SubjectWorkspace({
 }) {
   const approved = links.filter((link) => link.status === "APPROVED");
   const pending = links.filter((link) => link.status === "PENDING");
-  const selectedLink = approved.find((link) => link.classSectionId === classSectionId);
+  const selectedLink = approved.find(
+    (link) => link.classSectionId === classSectionId,
+  );
   const scopedLinks = selectedLink ? [selectedLink] : [];
 
   return (
     <section>
       <div className="mt-3 flex flex-wrap items-center gap-3">
-        <button type="button" className="button button--outline" onClick={onBack}>← All Subjects</button>
-        <button type="button" className="text-sm text-[var(--text-muted)]" onClick={onEdit}>Edit subject</button>
-        <span className="ml-auto font-mono text-sm font-bold tracking-widest text-[var(--accent-strong)]">Code: {subject.subjectCode}</span>
+        <button
+          type="button"
+          className="button button--outline"
+          onClick={onBack}
+        >
+          ← All Subjects
+        </button>
+        <button
+          type="button"
+          className="text-sm text-[var(--text-muted)]"
+          onClick={onEdit}
+        >
+          Edit subject
+        </button>
+        <span className="ml-auto font-mono text-sm font-bold tracking-widest text-[var(--accent-strong)]">
+          Code: {subject.subjectCode}
+        </span>
       </div>
       <div className="workspace-tabs" role="tablist">
-        {(["materials", "requirements", "grades", "progress", "requests"] as const).map((tab) => <button key={tab} type="button" role="tab" aria-selected={activeTab === tab} className="workspace-tab" onClick={() => onTab(tab)}>{tab[0].toUpperCase() + tab.slice(1)}</button>)}
+        {(
+          [
+            "materials",
+            "requirements",
+            "grades",
+            "progress",
+            "requests",
+          ] as const
+        ).map((tab) => (
+          <button
+            key={tab}
+            type="button"
+            role="tab"
+            aria-selected={activeTab === tab}
+            className="workspace-tab"
+            onClick={() => onTab(tab)}
+          >
+            {tab[0].toUpperCase() + tab.slice(1)}
+          </button>
+        ))}
       </div>
-      {activeTab !== "requests" && approved.length > 0 && <label className="mb-5 block max-w-md text-sm font-medium">Linked Class Section<select className="mt-1 w-full rounded-lg border px-3 py-2" value={classSectionId} onChange={(event) => onClassSection(event.target.value)}>{approved.map((link) => <option key={link.id} value={link.classSectionId}>{link.classSectionName} · {link.schoolYear}</option>)}</select></label>}
-      {activeTab === "requests" ? <div><h2 className="mb-3 text-xl font-semibold">Pending Request</h2><SubjectLinkRequestList requests={pending} onApprove={onApprove} onDecline={onDecline} /></div>
-        : !selectedLink ? <EmptyState title="No linked class sections" detail="Teaching content becomes available after a class adviser sends a request and you approve it from Requests." />
-          : activeTab === "materials" ? <TeacherMaterialsPanel classSectionId={classSectionId} subjectId={subject.id} />
-            : activeTab === "requirements" ? <ClassSectionActivitiesTab classSectionId={classSectionId} links={scopedLinks} />
-              : activeTab === "grades" ? <ClassSectionGradesTab classSectionId={classSectionId} links={scopedLinks} />
-                : <ClassSectionProgressTab classSectionId={classSectionId} links={scopedLinks} />}
+      {activeTab !== "requests" && approved.length > 0 && (
+        <label className="mb-5 block max-w-md text-sm font-medium">
+          Linked Class Section
+          <select
+            className="mt-1 w-full rounded-lg border px-3 py-2"
+            value={classSectionId}
+            onChange={(event) => onClassSection(event.target.value)}
+          >
+            {approved.map((link) => (
+              <option key={link.id} value={link.classSectionId}>
+                {link.classSectionName} · {link.schoolYear}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
+      {activeTab === "requests" ? (
+        <div>
+          <h2 className="mb-3 text-xl font-semibold">Pending Request</h2>
+          <SubjectLinkRequestList
+            requests={pending}
+            onApprove={onApprove}
+            onDecline={onDecline}
+          />
+        </div>
+      ) : !selectedLink ? (
+        <EmptyState
+          title="No linked class sections"
+          detail="Teaching content becomes available after a class adviser sends a request and you approve it from Requests."
+        />
+      ) : activeTab === "materials" ? (
+        <TeacherMaterialsPanel
+          classSectionId={classSectionId}
+          subjectId={subject.id}
+        />
+      ) : activeTab === "requirements" ? (
+        <ClassSectionActivitiesTab
+          classSectionId={classSectionId}
+          links={scopedLinks}
+        />
+      ) : activeTab === "grades" ? (
+        <ClassSectionGradesTab
+          classSectionId={classSectionId}
+          links={scopedLinks}
+        />
+      ) : (
+        <ClassSectionProgressTab
+          classSectionId={classSectionId}
+          links={scopedLinks}
+        />
+      )}
     </section>
   );
 }

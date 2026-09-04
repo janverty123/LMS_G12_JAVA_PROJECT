@@ -18,7 +18,9 @@
   --notification-border: var(--accent);
   --notification-action: var(--accent-strong);
   --success: #149b62;
+  --success-soft: #e5f7ee;
   --danger: #dc4661;
+  --danger-soft: #fdecef;
   --shadow: 0 18px 55px rgb(39 24 52 / 10%);
 }
 
@@ -38,18 +40,30 @@
   --notification-border: var(--accent);
   --notification-action: var(--accent-strong);
   --success: #21c77c;
+  --success-soft: #173d2b;
   --danger: #ff6680;
+  --danger-soft: #48232c;
   --shadow: 0 20px 60px rgb(0 0 0 / 28%);
 }
 
 @layer base {
+  html {
+    overflow-x: hidden;
+  }
+
   body {
-    @apply min-w-80 antialiased;
+    @apply antialiased;
     background: var(--page);
     color: var(--text);
+    overflow-x: hidden;
     transition:
       background-color 180ms ease,
       color 180ms ease;
+  }
+
+  img,
+  svg {
+    max-width: 100%;
   }
 
   button,
@@ -62,6 +76,11 @@
 
   input[type="file"] {
     max-width: 100%;
+  }
+
+  button {
+    min-height: 2.5rem;
+    touch-action: manipulation;
   }
 }
 
@@ -103,7 +122,7 @@
   }
 
   .landing-page {
-    min-height: 100vh;
+    min-height: 100dvh;
     padding: 1.25rem clamp(1.25rem, 5vw, 5rem);
   }
   .landing-nav {
@@ -243,12 +262,36 @@
   .auth-back:hover span {
     transform: translateX(-0.2rem);
   }
+  .auth-form-column {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    min-width: 0;
+    padding: clamp(1rem, 4vw, 3rem);
+  }
+  .auth-form-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 1.35rem;
+    box-shadow: var(--shadow);
+    max-width: 30rem;
+    padding: clamp(1.25rem, 4vw, 2.25rem);
+    position: relative;
+    width: 100%;
+  }
+  .auth-back--inline {
+    left: auto;
+    margin-bottom: 1.5rem;
+    padding: 0.25rem 0;
+    position: static;
+    top: auto;
+  }
 
   .role-page {
     align-items: center;
     display: flex;
     justify-content: center;
-    min-height: 100vh;
+    min-height: 100dvh;
     padding: 7rem 1.5rem 3rem;
     position: relative;
   }
@@ -393,7 +436,7 @@
     background: var(--page);
     color: var(--text);
     display: flex;
-    min-height: 100vh;
+    min-height: 100dvh;
   }
   .app-sidebar {
     background: var(--sidebar);
@@ -500,7 +543,15 @@
     text-align: left;
   }
   .app-content {
+    min-width: 0;
     padding: 0 clamp(1rem, 4vw, 3.5rem) 3rem;
+    width: 100%;
+  }
+  .app-content > * {
+    min-width: 0;
+  }
+  .app-content :where(h1, h2, h3, p, a, button, td, th) {
+    overflow-wrap: anywhere;
   }
 
   .page-heading h1 {
@@ -519,6 +570,7 @@
     margin: 1.7rem -0.6rem 1.2rem;
     overflow-x: auto;
     padding: 0 0.6rem;
+    scrollbar-width: thin;
   }
   .workspace-tab {
     border-bottom: 2px solid transparent;
@@ -538,6 +590,75 @@
     border: 1px solid var(--border);
     border-radius: 1rem;
     padding: clamp(1rem, 2.5vw, 1.5rem);
+  }
+  .responsive-actions {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  .responsive-form-row {
+    align-items: stretch;
+    display: flex;
+    gap: 0.75rem;
+    max-width: 42rem;
+  }
+  .responsive-form-row > :first-child {
+    min-width: 0;
+  }
+  .responsive-form-row input,
+  .responsive-form-row select {
+    width: 100%;
+  }
+  .scroll-table {
+    -webkit-overflow-scrolling: touch;
+    max-width: 100%;
+    overflow-x: auto;
+  }
+  .scroll-table table {
+    min-width: 40rem;
+  }
+  .empty-state {
+    background: var(--surface-muted);
+    border: 1px dashed var(--border);
+    border-radius: 0.75rem;
+    padding: 2rem 1.25rem;
+    text-align: center;
+  }
+  .empty-state__title {
+    color: var(--text);
+    font-weight: 500;
+  }
+  .empty-state__detail {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+  }
+  .confirm-dialog {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    max-height: calc(100dvh - 2rem);
+    overflow-y: auto;
+  }
+  .status-badge--approved,
+  .api-alert--success,
+  .approved-card {
+    background: var(--success-soft);
+    border-color: var(--success);
+    color: var(--success);
+  }
+  .status-badge--declined,
+  .api-alert--error {
+    background: var(--danger-soft);
+    border-color: var(--danger);
+    color: var(--danger);
+  }
+  .approved-card__title {
+    color: var(--text);
+  }
+  .approved-card__detail {
+    color: var(--text-muted);
   }
   .dashboard-stat-card {
     background: linear-gradient(145deg, var(--surface), var(--accent-soft));
@@ -633,6 +754,16 @@ textarea::placeholder {
   .role-card {
     min-height: 17rem;
   }
+  .auth-form-column {
+    align-items: flex-start;
+    min-height: 100svh;
+    padding: 1rem;
+  }
+  .auth-form-card {
+    border-radius: 1rem;
+    box-shadow: none;
+    margin: auto 0;
+  }
   .app-layout {
     display: block;
   }
@@ -641,7 +772,7 @@ textarea::placeholder {
     border-right: 0;
     bottom: 0;
     left: 0;
-    padding: 0.45rem;
+    padding: 0.45rem 0.45rem max(0.45rem, env(safe-area-inset-bottom));
     position: fixed;
     right: 0;
     z-index: 40;
@@ -654,11 +785,17 @@ textarea::placeholder {
     gap: 0.15rem;
     justify-content: space-around;
     overflow-x: auto;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+  }
+  .app-nav::-webkit-scrollbar {
+    display: none;
   }
   .app-nav__link {
     font-size: 0.7rem;
     min-width: 4.5rem;
     padding: 0.6rem 0.45rem;
+    scroll-snap-align: start;
     text-align: center;
   }
   .app-header {
@@ -676,7 +813,71 @@ textarea::placeholder {
     height: 2.35rem;
     width: 2.35rem;
   }
+  .profile-menu__dropdown {
+    max-width: calc(100vw - 1.5rem);
+    min-width: min(15rem, calc(100vw - 1.5rem));
+  }
   .app-content {
-    padding-bottom: 6rem;
+    padding-bottom: calc(6rem + env(safe-area-inset-bottom));
+  }
+  .responsive-form-row {
+    flex-direction: column;
+  }
+  .responsive-form-row > button,
+  .responsive-form-row > .button {
+    width: 100%;
+  }
+  .app-content form.flex.flex-wrap > label {
+    min-width: min(100%, 12rem);
+  }
+  .scroll-table table {
+    min-width: 36rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .landing-page {
+    padding-inline: 1rem;
+  }
+  .landing-nav__actions {
+    gap: 0.45rem;
+  }
+  .landing-nav .button {
+    padding-inline: 0.9rem;
+  }
+  .role-page {
+    padding-inline: 1rem;
+  }
+  .role-card {
+    min-height: 0;
+    padding: 1.35rem;
+  }
+  .app-header {
+    padding-inline: 0.75rem;
+  }
+  .app-content {
+    padding-inline: 0.75rem;
+  }
+  .panel {
+    border-radius: 0.8rem;
+    padding: 0.9rem;
+  }
+  .page-heading h1 {
+    font-size: 1.85rem;
+  }
+  .workspace-tab {
+    padding-inline: 0.8rem;
+  }
+  .responsive-actions {
+    align-items: stretch;
+  }
+  .responsive-actions > button,
+  .responsive-actions > .button {
+    flex: 1 1 100%;
+    justify-content: center;
+  }
+  .app-content form.flex.flex-wrap > label,
+  .app-content form.flex.flex-wrap > button {
+    width: 100%;
   }
 }

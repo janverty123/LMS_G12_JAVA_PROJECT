@@ -68,18 +68,22 @@ export function AuthPage({
 
   return (
     <div className="relative grid min-h-screen bg-[var(--page)] lg:grid-cols-[1.05fr_0.95fr]">
-      <Link className="auth-back" to="/" aria-label="Back to home">
-        <span aria-hidden="true">←</span> Back
-      </Link>
       <div className="relative hidden overflow-hidden border-r border-[var(--border)] bg-[var(--surface)] lg:block">
         <Link className="brand absolute left-10 top-8" to="/">
           Classi<span>fy</span>
         </Link>
         <LearningIllustration className="absolute inset-16 top-28" />
       </div>
-      <div className="grid place-items-center px-5 py-10">
-        <div className="w-full max-w-md">
-          <Link className="brand mb-8 block lg:hidden" to="/">
+      <div className="auth-form-column">
+        <div className="auth-form-card">
+          <Link
+            className="auth-back auth-back--inline"
+            to="/"
+            aria-label="Back to home"
+          >
+            <span aria-hidden="true">←</span> Back
+          </Link>
+          <Link className="brand mb-7 block lg:hidden" to="/">
             Classi<span>fy</span>
           </Link>
           <h1 className="text-4xl font-normal tracking-tight">
