@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { EditProfileDialog } from "./EditProfileDialog";
 import { ThemeToggle } from "./ThemeToggle";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -10,6 +11,7 @@ function navClass({ isActive }: { isActive: boolean }) {
 export function AppShell() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [editingProfile, setEditingProfile] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -55,17 +57,19 @@ export function AppShell() {
         </nav>
       </aside>
 
+      {editingProfile && <EditProfileDialog onClose={() => setEditingProfile(false)} />}
       <div className="app-stage">
         <header className="app-header">
           <div className="app-header__mobile-brand brand">Classi<span>fy</span></div>
           <div ref={menuRef} className="profile-menu">
             <button type="button" className="profile-menu__trigger" aria-expanded={menuOpen} aria-haspopup="menu" onClick={() => setMenuOpen((open) => !open)}>
               <span className="profile-menu__copy"><strong>{user?.name}</strong><small>{user?.role === "TEACHER" ? "Teacher" : "Student"}</small></span>
-              <span className="profile-avatar" aria-hidden="true">{initial}</span>
+              <span className="profile-avatar" aria-hidden="true">{user?.profilePicture ? <img src={user.profilePicture} alt="" className="h-full w-full rounded-full object-cover" /> : initial}</span>
             </button>
             {menuOpen && (
               <div className="profile-menu__dropdown" role="menu">
                 <p><strong>{user?.name}</strong><span>{user?.email}</span></p>
+                <button type="button" role="menuitem" className="profile-menu__signout" onClick={() => { setMenuOpen(false); setEditingProfile(true); }}>Edit profile</button>
                 <ThemeToggle />
                 <button type="button" className="profile-menu__signout" onClick={handleLogout}>Sign out</button>
               </div>

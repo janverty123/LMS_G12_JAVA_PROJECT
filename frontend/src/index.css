@@ -881,3 +881,27 @@ textarea::placeholder {
     width: 100%;
   }
 }
+
+.edit-profile-dialog {
+  width: min(32rem, calc(100vw - 2rem));
+  max-height: calc(100dvh - 2rem);
+  overflow-y: auto;
+  border: 1px solid var(--border-color, #cbd5e1);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  color: var(--text);
+  background: var(--surface, white);
+}
+.edit-profile-dialog::backdrop { background: rgb(15 23 42 / 55%); }
+.edit-profile-dialog input:not([type="file"]) {
+  border: 1px solid #94a3b8;
+  border-radius: 0.5rem;
+  padding: 0.6rem 0.75rem;
+  color: inherit;
+  background: transparent;
+}
+
+.edit-profile-dialog fieldset,
+.edit-profile-dialog label,
+.edit-profile-dialog input { min-width: 0; }
+.edit-profile-dialog input { width: 100%; }

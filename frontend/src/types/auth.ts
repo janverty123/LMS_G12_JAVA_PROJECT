@@ -6,6 +6,8 @@ export interface AuthResponse {
   name: string;
   email: string;
   role: Role;
+  lrn?: string | null;
+  profilePicture?: string | null;
 }
 
 export interface LoginRequest {

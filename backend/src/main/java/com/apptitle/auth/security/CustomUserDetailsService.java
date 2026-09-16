@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Bridges our User entity to Spring Security's UserDetails contract.
@@ -33,6 +34,15 @@ public class CustomUserDetailsService implements UserDetailsService {
         User user = userRepository.findByEmailIgnoreCase(email)
                 .orElseThrow(() -> new UsernameNotFoundException("No account found for " + email));
 
+        return details(user);
+    }
+
+    public UserDetails loadUserById(UUID userId) {
+        return details(userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("Account not found")));
+    }
+
+    private UserDetails details(User user) {
         return org.springframework.security.core.userdetails.User
                 .withUsername(user.getEmail())
                 .password(user.getPasswordHash())

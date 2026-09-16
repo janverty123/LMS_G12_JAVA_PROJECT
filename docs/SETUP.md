@@ -99,6 +99,7 @@ manual, ordered feature migrations:
 4. `grades_migration.sql`
 5. `progress_migration.sql`
 6. `announcements_notifications_migration.sql`
+7. `profile_migration.sql` (adds the optional account profile picture)
 
 These scripts are not a complete fresh-schema migration chain: the original
 users/teachers/students baseline is still created by Hibernate in development.
@@ -128,3 +129,16 @@ a production deployment manifest or certificate automation.
   apply the feature SQL in order; do not switch production to `ddl-auto=update`.
 - Browser API network errors: use same-origin `/api` or set
   `VITE_API_BASE_URL` at frontend build time.
+
+## Profile editing
+
+Use the top-right account menu → Edit profile to update the full name, email,
+student LRN, or picture. Student LRNs must contain 12 digits and cannot belong
+to another account. The authenticated `/api/profile` endpoint always selects
+the current account; clients cannot choose another user ID. Sessions resolve
+the immutable account ID so changing an email preserves account ownership.
+
+The browser crops JPG, PNG, or WebP pictures to a 192 × 192 PNG avatar. The
+backend accepts validated PNG avatars up to 256 KiB and 512 × 512 pixels,
+stored in the nullable `users.profile_picture` text column. Existing learning
+material and activity uploads continue using the direct-to-storage contract.

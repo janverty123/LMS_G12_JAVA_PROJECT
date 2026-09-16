@@ -27,6 +27,10 @@ public class User extends BaseEntity {
     @Column(nullable = false, unique = true)
     private String email;
 
+    /** Small raster avatar; role-specific profile fields remain on Teacher/Student. */
+    @Column(columnDefinition = "text")
+    private String profilePicture;
+
     /** BCrypt hash — never the raw password. Populated starting Phase 2. */
     @Column(nullable = false)
     private String passwordHash;

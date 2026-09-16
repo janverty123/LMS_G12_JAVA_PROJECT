@@ -100,7 +100,8 @@ public class AuthService {
         student = studentRepository.save(student);
 
         String token = jwtService.generateToken(user.getId(), user.getEmail(), user.getRole());
-        return new AuthResponse(token, user.getId(), student.getName(), user.getEmail(), user.getRole());
+        return new AuthResponse(token, user.getId(), student.getName(), user.getEmail(), user.getRole(),
+                student.getLrn(), user.getProfilePicture());
     }
 
     public AuthResponse login(LoginRequest request) {
@@ -117,7 +118,9 @@ public class AuthService {
 
         String name = resolveDisplayName(user);
         String token = jwtService.generateToken(user.getId(), user.getEmail(), user.getRole());
-        return new AuthResponse(token, user.getId(), name, user.getEmail(), user.getRole());
+        return new AuthResponse(token, user.getId(), name, user.getEmail(), user.getRole(),
+                user.getRole() == Role.STUDENT ? studentRepository.findByUserId(user.getId()).orElseThrow().getLrn() : null,
+                user.getProfilePicture());
     }
 
     private String resolveDisplayName(User user) {

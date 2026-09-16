@@ -16,9 +16,9 @@ import java.util.function.Function;
 
 /**
  * Issues and validates stateless JWTs. Token subject is the user's email;
- * userId and role are carried as custom claims so downstream code (the
- * request filter, controllers via the authenticated principal) doesn't need
- * a DB round-trip just to know who's calling and what role they have.
+ * userId and role are carried as custom claims. Authentication resolves the
+ * immutable userId to the current account, so email edits cannot transfer a
+ * session to another account that later registers the previous email.
  */
 @Component
 public class JwtService {
