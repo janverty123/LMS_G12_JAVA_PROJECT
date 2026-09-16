@@ -1,0 +1,705 @@
+CLASSIFY — REWRITTEN FORMS CONTENT
+Lagro Tech Hub
+Lagro High School Software Company
+
+This text version preserves the people, organization, project title, roles, dates,
+prices, and other identifying information from the supplied forms. The project
+descriptions have been rewritten for clarity and consistency with the Classify
+Learning Management and Student Progress Monitoring System.
+
+
+======================================================================
+ANNEX A: FORM A-1
+CLIENT REQUIREMENT & INTERVIEW FORM
+======================================================================
+
+CLIENT NAME
+Ma'am Zaida Padullo
+
+DATE
+August 10, 2027
+
+ORGANIZATION
+Lagro High School
+
+CONTACT PERSON
+Mr. Mark Angel Agundang
+
+BUSINESS PROBLEM
+Classroom records and learning resources are handled through a mixture of
+paper documents, folders, spreadsheets, and separate communication channels.
+This makes it difficult for teachers to organize materials, monitor submissions,
+compute grades, and identify students who need support. Students may also miss
+announcements, deadlines, or feedback because information is not available in
+one central system.
+
+CURRENT PROCESS
+Teachers distribute materials and activities manually, record scores in paper
+records or Excel files, and check student work one submission at a time.
+Announcements and reminders are sent through separate channels. Class lists,
+subject records, grades, and progress reports must be updated independently,
+which creates duplicate work and increases the risk of missing or inconsistent
+information.
+
+DESIRED SYSTEM
+Classify: a responsive Learning Management and Student Progress Monitoring
+System that centralizes class sections, subjects, learning materials, activities,
+submissions, grades, progress, announcements, and notifications. The system
+must provide secure role-based access for teachers and students and must keep
+grading and authorization rules under backend control.
+
+REQUIRED FEATURES
+[X] Login
+[X] Registration
+[X] Database
+[X] Classes
+[X] Subjects
+[X] Dashboard
+[X] Grades
+[X] Student Progress
+[X] Other: Learning materials, activities, file uploads, announcements,
+           notifications, and Excel gradebook export
+
+TARGET USERS
+- Teachers
+- Students
+
+PREPARED BY
+Rhiane Chloe Sartillo
+Business Analyst/System Analyst
+(Signature over printed name)
+
+APPROVED BY
+Daniel Jacob Chua
+Project Manager
+(Signature over printed name)
+
+
+======================================================================
+ANNEX A: FORM A-2
+COMMERCIAL COST QUOTATION FORM
+======================================================================
+
+CLIENT / ORGANIZATION
+Lagro High School
+
+QUOTATION DATE
+Ma'am Zaida Padullo
+
+PROJECT TITLE
+Classify: Learning Management with Student Progress Monitoring System
+
+QUOTATION VALID UNTIL
+[To be confirmed by the client and development team]
+
+ITEMIZED SERVICE QUOTATION
+
+1. UI/UX Design — PHP 1,000
+   Design of responsive teacher and student interfaces, including navigation,
+   dashboards, forms, tables, progress views, and mobile-friendly layouts.
+
+2. Website / Application Development — PHP 5,000
+   Development of the React and TypeScript frontend and the Java 21/Spring Boot
+   backend for authentication, class and subject management, materials,
+   activities, grading, progress, announcements, and notifications.
+
+3. Database Development — PHP 3,000
+   Design and implementation of the PostgreSQL data model for users, class
+   sections, enrollments, subjects, materials, activities, submissions, grades,
+   progress, announcements, and notifications, including data-integrity rules.
+
+4. Testing — PHP 1,000
+   Functional, validation, authorization, and user-acceptance testing of the
+   main teacher and student workflows, including failure and duplicate cases.
+
+5. Deployment — PHP 2,000
+   Preparation and deployment of the application, PostgreSQL database, and
+   S3-compatible file storage, including environment configuration and final
+   handover support.
+
+TOTAL PROJECT COST
+PHP 12,000
+
+PREPARED BY
+Rhiane Chloe Sartillo
+Business Analyst/System Analyst
+(Signature over printed name)
+
+APPROVED BY
+Daniel Jacob Chua
+Project Manager
+(Signature over printed name)
+
+
+======================================================================
+ANNEX A: FORM A-3
+CLIENT NEGOTIATION & SCOPE RECORD
+======================================================================
+
+CLIENT / ORGANIZATION
+Lagro High School
+
+NEGOTIATION DATE
+9/1/26
+
+PROJECT TITLE
+Classify: Learning Management with Student Progress Monitoring System
+
+FACILITATED BY
+Daniel Jacob Chua
+
+PACKAGE OPTIONS PRESENTED
+
+BASIC PACKAGE — PHP 8,000
+- Secure login and registration
+- Basic PostgreSQL database
+- Class-section creation and student enrollment
+- Subject creation and class-to-subject linking
+- Basic teacher and student dashboards
+
+PREMIUM PACKAGE — PHP 12,000
+- All Basic Package features
+- Learning-material management and file uploads
+- Written Activity, Performance Task, and Test activities
+- Student submissions and teacher scoring
+- Automated grade computation and gradebook views
+- Student-progress monitoring
+- Excel gradebook export
+- Announcements and persistent notifications
+- Expanded database and S3-compatible file storage
+- Responsive teacher and student interfaces
+
+CLIENT REQUEST
+The client requested a complete learning management system that reduces manual
+classroom work and keeps class, subject, material, activity, grade, progress,
+announcement, and notification records in one place. The client also requested
+an easy-to-use profile-editing feature and a final project cost that remains
+within the PHP 12,000 Premium Package budget.
+
+DEVELOPMENT TEAM DECISION
+[ ] Remove non-essential features? No. The listed features support the agreed
+    classroom workflow and acceptance criteria.
+[ ] Reduce project scope? No. The full Premium Package scope will be retained.
+[ ] Extend delivery deadline? No. Work will follow the five-week schedule.
+[ ] Offer the Basic Package version? No. The Premium Package was selected.
+[X] Negotiate final price? Yes. The final simulated price is PHP 12,000.
+
+FINAL AGREED TERMS
+The client and development team agreed to the Premium Package for a simulated
+total project cost of PHP 12,000. The system will include secure authentication,
+class and subject management, learning materials, activities, file submission,
+teacher-controlled grading, student-progress monitoring, Excel export,
+announcements, notifications, and responsive teacher and student interfaces.
+Profile editing is recorded under Change Request CR-001. Up to two minor
+revisions are included; additional changes require a separate change request.
+
+PREPARED BY
+Rhiane Chloe Sartillo
+Business Analyst/System Analyst
+(Signature over printed name)
+
+APPROVED BY
+Daniel Jacob Chua
+Project Manager
+(Signature over printed name)
+
+
+======================================================================
+ANNEX B: FORM B-1
+PROJECT ACCEPTANCE AGREEMENT FORM
+======================================================================
+
+CLIENT / ORGANIZATION
+Lagro High School
+
+AGREEMENT DATE
+September 1, 2026
+
+PROJECT TITLE
+Classify: Learning Management with Student Progress Monitoring System
+
+DEVELOPER / AGENCY NAME
+Classify
+
+SOFTWARE DEVELOPMENT AGREEMENT
+This agreement records the finalized project scope, simulated price, delivery
+terms, and acceptance conditions agreed upon by the client and development team.
+
+CLIENT — NAME AND CONTACT INFORMATION
+Lagro High School
+Client: Ma'am Zaida M. Padullo
+Contact Person: Mr. Mark Angel Agundang
+
+DEVELOPER — COMPANY / AGENCY DETAILS
+Project Manager: Daniel Jacob Chua
+Team Members: Rhiane Chloe Sartillo, Joenlyn Capales, John Oliver Oasan
+
+PROJECT DESCRIPTION
+Classify is a responsive web-based learning management and student-progress
+system for Lagro High School. It organizes classroom work through the hierarchy
+Class Section -> Subject -> Materials, Activities, Grades, and Progress. Teachers
+can manage their assigned responsibilities, while students join one class and
+receive access only to approved subjects linked to that class.
+
+SCOPE
+- Secure teacher and student registration and login
+- Role-based backend authorization
+- Class-section creation, class codes, and student join requests
+- Subject creation and class-to-subject linking requests
+- Learning-material posting and direct S3-compatible file uploads
+- Activities in exactly three categories: Written Activity, Performance Task,
+  and Test
+- Student submissions, teacher scoring, and score-request approval workflows
+- Backend-controlled grade computation and grade configuration
+- Teacher gradebook, student grades, progress monitoring, and Excel export
+- Section announcements and persistent user notifications
+- Responsive teacher and student interfaces
+
+DELIVERABLES
+1. React and TypeScript frontend
+2. Java 21 and Spring Boot backend API
+3. PostgreSQL database
+4. S3-compatible object-storage integration
+5. Teacher and student dashboards
+6. Class, subject, material, activity, grade, and progress modules
+7. Announcements and notifications
+8. Excel gradebook export
+9. Test results and deployment configuration
+10. Project documentation and final handover
+
+TIMELINE
+Five-week development timeline, from requirements gathering and wireframing
+through implementation, testing, deployment, and client presentation, as
+detailed in the Project Planning Schedule and Milestone Matrix.
+
+REVISION LIMITS
+Up to two minor revisions are included. Requests that change the agreed scope,
+cost, or schedule must be documented and approved through a Change Request.
+
+ACCEPTANCE CRITERIA
+The project will be accepted when login, registration, database operations,
+dashboards, class and subject management, materials, activities, grades,
+student-progress monitoring, announcements, notifications, file handling, and
+Excel export pass User Acceptance Testing. Authorization must be enforced by the
+backend, and the client must sign the Final User Acceptance form.
+
+WARRANTY / SUPPORT PERIOD
+Three months of free bug-fix support will be provided from the date of client
+acceptance. The support period covers defects within the agreed scope and does
+not include new features or major scope changes.
+
+PAYMENT BREAKDOWN
+
+Down Payment — Phase 1: Project Initiation
+30% — PHP 3,600
+
+Development — Phase 2: Core Development
+40% — PHP 4,800
+
+Final Payment — Phase 3: Deployment and Sign-off
+30% — PHP 3,600
+
+TOTAL PROJECT COST
+100% — PHP 12,000
+
+NOTE
+SIMULATION ONLY — NO REAL MONEY
+
+PREPARED BY
+Rhiane Chloe Sartillo
+Business Analyst/System Analyst
+(Signature over printed name)
+
+APPROVED BY
+Daniel Jacob Chua
+Project Manager
+(Signature over printed name)
+
+
+======================================================================
+ANNEX B: FORM B-2
+PROJECT PLANNING SCHEDULE & MILESTONE MATRIX
+======================================================================
+
+PROJECT TITLE
+Classify: Learning Management with Student Progress Monitoring System
+
+PLAN PREPARED DATE
+8/5/26
+
+PREPARED BY — PROJECT MANAGER
+Daniel Jacob Chua
+
+TOTAL PROJECT DURATION
+5 Weeks
+
+DEVELOPMENT PLAN
+
+Week 1
+- Requirements gathering and client interview
+- Review of classroom workflows and authorization requirements
+- Teacher and student wireframes
+
+Week 2
+- PostgreSQL database design
+- Backend foundation and authentication
+- Class-section, enrollment, and subject-management implementation
+
+Weeks 2-3
+- React/TypeScript frontend and Spring Boot backend development
+- Learning materials, direct file uploads, and activity workflows
+- Grades, student progress, announcements, and notifications
+
+Week 3
+- Quality assurance testing
+- Authorization, validation, and failure-path testing
+- Bug fixing and interface refinement
+
+Week 4
+- Client review
+- Change Request CR-001: profile editing
+- User Acceptance Testing
+- Deployment preparation and deployment
+
+Week 5
+- Final client presentation
+- Documentation and system handover
+
+GANTT CHART / MILESTONES
+
+Task: Requirements Gathering & Client Interview
+Start: 8/5/26
+End: 8/7/26
+Duration: 3 days
+Priority: High
+Completion: 100%
+
+Task: Wireframes
+Start: 8/11/26
+End: 8/12/26
+Duration: 2 days
+Priority: High
+Completion: 100%
+
+Task: Database Design — PostgreSQL
+Start: 8/13/26
+End: 8/14/26
+Duration: 2 days
+Priority: Medium
+Completion: 100%
+
+Task: Frontend and Backend Programming
+Start: 8/13/26
+End: 8/24/26
+Duration: 11 days
+Priority: High
+Completion: 100%
+
+Task: Quality Assurance Testing & Bug Fixing
+Start: 8/25/26
+End: 8/28/26
+Duration: 4 days
+Priority: Medium
+Completion: 100%
+
+Task: Client Review & Change Request Implementation — CR-001
+Start: 9/1/26
+End: 9/1/26
+Duration: 1 day
+Priority: Medium
+Completion: 100%
+
+Task: User Acceptance Testing
+Start: 9/2/26
+End: 9/2/26
+Duration: 1 day
+Priority: Medium
+Completion: 100%
+
+Task: Deployment
+Start: 9/3/26
+End: 9/3/26
+Duration: 1 day
+Priority: High
+Completion: 100%
+
+Task: Client Presentation
+Start: 9/4/26
+End: 9/4/26
+Duration: 1 day
+Priority: High
+Completion: 100%
+
+PREPARED BY
+Daniel Jacob O. Chua
+Project Manager
+(Signature over printed name)
+
+
+======================================================================
+ANNEX B: FORM B-3
+OFFICIAL PAYMENT RECEIPT
+======================================================================
+
+RECEIPT NO.
+CS-2026-001
+
+RECEIPT DATE
+August 5, 2026
+
+CLIENT / ORGANIZATION
+Lagro High School
+
+PROJECT TITLE
+Classify: Learning Management with Student Progress Monitoring System
+
+PAYMENT TYPE
+[ ] Cash Simulation
+[ ] GCash Simulation
+[X] Bank Transfer Simulation
+
+STATUS
+Down payment received: 30% of the simulated project cost, equivalent to
+PHP 3,600 for Phase 1 — Project Initiation.
+
+NOTE
+SIMULATION ONLY — NO REAL MONEY
+Receipts must be stamped and verified by the designated Finance Desk Member or
+Teacher Evaluator.
+
+PREPARED BY
+Rhiane Chloe Sartillo
+Business Analyst/System Analyst
+(Signature over printed name)
+
+APPROVED BY
+Daniel Jacob Chua
+Project Manager
+(Signature over printed name)
+
+
+======================================================================
+ANNEX C: FORM C-1
+QUALITY ASSURANCE & SYSTEMS TEST LOG
+======================================================================
+
+PROJECT TITLE
+Classify: Learning Management with Student Progress Monitoring System
+
+TEST DATE
+8/25/26
+
+TESTED BY — QA TESTER
+Jonelyn Capales
+
+VERSION / BUILD NO.
+Version 1.2
+
+TEST CASE LOG
+
+1. Login
+Expected Result: A registered user can log in with valid credentials, and an
+invalid login is rejected without exposing protected information.
+Actual Result: Valid teacher and student accounts logged in successfully;
+invalid credentials were rejected.
+Status: PASS
+
+2. Registration
+Expected Result: Teachers and students can register with valid unique details;
+duplicate email addresses and duplicate student LRNs are rejected.
+Actual Result: Valid accounts were created and duplicate data was rejected.
+Status: PASS
+
+3. Dashboard
+Expected Result: Each authenticated user sees the correct role-specific summary,
+navigation, deadlines, and notifications.
+Actual Result: Teacher and student dashboards displayed authorized information.
+Status: PASS
+
+4. Class Management
+Expected Result: A class adviser can create a class section, issue a class code,
+review join requests, and manage the approved roster.
+Actual Result: Class creation, join requests, approvals, and roster views worked.
+Status: PASS
+
+5. Subject Management
+Expected Result: A subject teacher can create a subject, and a class adviser can
+request a link using the subject code. Students cannot join subjects directly.
+Actual Result: Subject creation and class-to-subject linking worked as designed.
+Status: PASS
+
+6. Learning Materials and File Uploads
+Expected Result: Authorized teachers can publish materials and upload files;
+approved students can view and download materials for linked subjects.
+Actual Result: Material management and direct multipart uploads completed with
+progress tracking, retry, cancellation, and authorization checks.
+Status: PASS
+
+7. Activities and Submissions
+Expected Result: Teachers can create Written Activity, Performance Task, and Test
+items; students can view and submit work before the applicable deadline.
+Actual Result: Activity creation, student submission, and teacher review worked.
+Status: PASS
+
+8. Grades and Progress
+Expected Result: The backend computes category averages and weighted final grades;
+users see only authorized grade and progress information.
+Actual Result: Gradebook, final grades, missing-work tracking, completion data,
+and progress status were calculated and displayed correctly.
+Status: PASS
+
+9. Announcements and Notifications
+Expected Result: Advisers can manage section announcements and users receive
+persistent notifications for relevant events.
+Actual Result: Announcements and user-scoped read/unread notifications worked.
+Status: PASS
+
+10. Excel Export
+Expected Result: An authorized teacher can download the current class and subject
+gradebook as an XLSX file.
+Actual Result: A valid server-generated XLSX gradebook was downloaded.
+Status: PASS
+
+11. Database and Authorization
+Expected Result: Data remains consistent, ownership rules are enforced by the
+backend, and unauthorized access is rejected.
+Actual Result: PostgreSQL data persisted correctly and unauthorized operations
+were rejected.
+Status: PASS
+
+BUG REPORT
+
+Bug #: BUG-001
+Description: The login request had a noticeable response delay.
+Severity: Medium
+Assigned To: Programmer
+Status: Fixed
+Resolution: The login flow and related data access were reviewed and optimized.
+The fix was retested successfully in Version 1.2.
+
+PREPARED BY
+Rhiane Chloe Sartillo
+Business Analyst/System Analyst
+(Signature over printed name)
+
+APPROVED BY
+Daniel Jacob Chua
+Project Manager
+(Signature over printed name)
+
+
+======================================================================
+ANNEX C: FORM C-2
+POST-DELIVERY CLIENT REVIEW & CHANGE REQUEST LOG
+======================================================================
+
+PROJECT TITLE
+Classify: Learning Management with Student Progress Monitoring System
+
+REVIEW DATE
+September 1, 2026
+
+CLIENT / ORGANIZATION
+Lagro High School
+
+REVIEWED BY
+Ma'am Zaida M. Padullo
+
+CLIENT REVIEW
+The Classify system presents a clear and organized way to manage classroom work.
+It centralizes class and subject records, learning materials, activities,
+submissions, grades, student progress, announcements, and notifications. This
+can reduce repetitive teacher workload and make important information easier for
+students to access. The main workflows are understandable and responsive. The
+client requested profile editing so users can maintain accurate account details
+without needing direct database assistance.
+
+CHANGE REQUEST
+Request #: CR-001
+Requested Change: Add profile editing.
+Impact: Database, user interface, and system validation
+Additional Cost: PHP 500 simulation
+Additional Time: 2 days
+
+IMPLEMENTATION RESULT
+Profile editing was added with backend validation and authorization. Users can
+update their permitted profile information, while protected identity and role
+rules remain enforced by the system.
+
+PREPARED BY
+Jonelyn Capales
+Person in Charge
+(Signature over printed name)
+
+VERIFIED BY
+Ma'am Zaida M. Padullo
+Client
+(Signature over printed name)
+
+APPROVED BY
+Daniel Jacob Chua
+Project Manager
+(Signature over printed name)
+
+
+======================================================================
+ANNEX C: FORM C-3
+FINAL USER ACCEPTANCE & CLIENT SIGN-OFF FORM
+======================================================================
+
+CLIENT / ORGANIZATION
+Lagro High School
+
+HANDOVER DATE
+September 4, 2026
+
+PROJECT TITLE
+Classify: Learning Management with Student Progress Monitoring System
+
+DEPLOYED LOCATION / STATION
+Lagro High School
+
+CLIENT ACCEPTANCE FORM
+
+[X] Login — Accepted
+[X] Registration — Accepted
+[X] Database — Accepted
+[X] Dashboard — Accepted
+[X] Grades — Accepted
+[X] Student Progress — Accepted
+[X] Classes — Accepted
+[X] Subjects — Accepted
+[X] Learning Materials and File Uploads — Accepted
+[X] Activities and Student Submissions — Accepted
+[X] Excel Gradebook Export — Accepted
+[X] Announcements and Notifications — Accepted
+[X] Profile Editing under CR-001 — Accepted
+
+STATUS
+PROJECT ACCEPTED
+
+ACCEPTANCE STATEMENT
+The client confirms that the Classify Learning Management with Student Progress
+Monitoring System was presented and tested against the agreed acceptance
+criteria. The listed requirements are accepted, subject to the three-month
+bug-fix support period stated in the Project Acceptance Agreement.
+
+PREPARED BY
+Jonelyn Capales
+Person in Charge
+(Signature over printed name)
+
+VERIFIED BY
+Ma'am Zaida M. Padullo
+Client
+(Signature over printed name)
+
+APPROVED BY
+Daniel Jacob Chua
+Project Manager
+(Signature over printed name)
+
+
+======================================================================
+END OF REWRITTEN FORMS CONTENT
+======================================================================
