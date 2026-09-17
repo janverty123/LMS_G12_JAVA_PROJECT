@@ -25,6 +25,10 @@ apptitle/
 
 ## Quick start
 
+For four independent Windows 11 installations, see the
+[Windows local setup guide](./docs/LOCAL_WINDOWS_SETUP.md), including command-line
+prerequisite installation and startup instructions.
+
 See [docs/SETUP.md](./docs/SETUP.md) for full instructions. Short version:
 
 ```bash
